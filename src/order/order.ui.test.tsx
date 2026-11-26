@@ -37,7 +37,7 @@ beforeEach(() => {
     if (url !== '/api/v1/shop') throw new Error(`unexpected ${url}`);
     const next = answers.shift() ?? 'open';
     if (next === 'fail') throw new TypeError('Failed to fetch');
-    return new Response(JSON.stringify({ name: 'CheesyBeez Thalwila', open: next === 'open', hours, phone, delivery }), { status: 200 });
+    return new Response(JSON.stringify({ name: 'Sunrise Cafe', open: next === 'open', hours, phone, delivery }), { status: 200 });
   }));
 });
 afterEach(() => { cleanup(); vi.useRealTimers(); vi.unstubAllGlobals(); setMenuState(EMPTY_MENU_STATE); });
@@ -154,8 +154,8 @@ test('pickup info: the town with a Maps link, how to pay; hours, Call and WhatsA
   render(<OrderSite />);
   await screen.findByText('Open for pickup');
   let info = within(screen.getByRole('region', { name: 'Pickup info' }));
-  expect(info.getByText(/Melo POS/)).toBeTruthy();
-  expect(info.getByRole('link', { name: 'Open in Maps' }).getAttribute('href')).toContain('query=Melo%20POS');
+  expect(info.getByText(/Sunrise Cafe/)).toBeTruthy();
+  expect(info.getByRole('link', { name: 'Open in Maps' }).getAttribute('href')).toContain('query=Sunrise%20Cafe');
   expect(info.getByText('Pay when you collect: cash or bank transfer')).toBeTruthy();
   expect(info.queryByText(/Daily/)).toBeNull();
   expect(info.queryByRole('link', { name: 'Call' })).toBeNull();
@@ -185,7 +185,7 @@ test('mood strips: two at most, after Pizza and before the footer, never back to
   expect(between.some((sec) => sec.querySelectorAll('.o-items > li').length >= 3)).toBe(true);
   expect(strips[1].nextElementSibling?.tagName).toBe('FOOTER');
   const end = within(strips[1]);
-  expect(end.getByText(/Melo POS/)).toBeTruthy();
+  expect(end.getByText(/Sunrise Cafe/)).toBeTruthy();
   expect(end.queryByText(/Daily/)).toBeNull();
   expect(end.getByRole('link', { name: 'Open in Maps' })).toBeTruthy();
   for (const img of document.querySelectorAll('.o-strip img')) expect([img.getAttribute('loading'), img.getAttribute('width'), img.getAttribute('height')]).toEqual(['lazy', '800', '600']);

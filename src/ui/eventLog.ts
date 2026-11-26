@@ -138,6 +138,8 @@ export const markSynced = (ids: readonly string[], now = Date.now()): void => {
     e.type === 'crm.receipt_set' ||
     // The owner's line on the bill (SCRUM-256): the printer reads it here.
     e.type === 'shop.bill_line_set' ||
+    // The shop's own name and town (shopDetails.ts): every screen's corner and the bill read it.
+    e.type === 'shop.details_set' ||
     e.type === 'recipe.answer_set' ||
     e.type === 'recipe.draft_set' ||
     e.type === 'stock.item_added' ||

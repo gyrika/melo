@@ -1,5 +1,7 @@
 import { isStaffRole, managesRole, mayRecord } from '../src/domain/auth.ts';
 import { checkBillLine } from '../src/domain/billExtras.ts';
+import { checkShopDetails } from '../src/domain/shopDetails.ts';
+import { MENU_INSTALLER as SETUP_ACTOR } from '../src/shop/starterMenu.ts';
 import { createWriteStream, mkdirSync, rmSync } from 'node:fs';
 import { rm } from 'node:fs/promises';
 import type { IncomingMessage } from 'node:http';
@@ -273,16 +275,31 @@ export function setupApi(ctx: SetupContext) {
     /** Step 1: name the shop. The first time, this PC also becomes the counter (its token comes back once). */
     async nameShop(body: { name?: unknown; place?: unknown }) {
       if (ctx.settings.get().setupDone) throw new SetupError(409, 'invalid', 'the shop is already set up');
-      const name = typeof body.name === 'string' ? body.name.trim().slice(0, 80) : '';
-      const place = typeof body.place === 'string' ? body.place.trim().slice(0, 80) : '';
-      if (!name) throw new SetupError(400, 'invalid', 'the shop needs a name');
+      const name = typeof body.name === 'string' ? body.name.trim() : '';
+      const place = typeof body.place === 'string' ? body.place.trim() : '';
+      const why = checkShopDetails(name, place);
+      if (why) throw new SetupError(400, 'invalid', why);
       const existing = shop();
       // A short random ending: two shops (or a test install) with the same name never mix in the cloud.
       const id = existing?.id ?? `${shopIdFor(name, place)}-${randomBytes(3).toString('hex').slice(0, 4)}`;
       ctx.settings.set({ shopId: id, shopName: name, place });
+      // Every screen, the bill and the owner's phone show the shop's own name (shopDetails.ts).
+      // No owner exists yet at this step: the POS itself records it.
+      if (ctx.ingest && (existing?.name !== name || existing?.place !== place)) await record(SETUP_ACTOR, { type: 'shop.details_set', name, place });
       if (existing) return { shopId: id };
       const { token } = await ctx.store.addDevice(id, `${name} ${place}`.trim(), 'counter');
       return { shopId: id, counterToken: token };
+    },
+
+    /** Shop setup › Shop: the owner renames the shop or changes its town (owner's PIN). */
+    async shopDetails(body: { ownerPin?: unknown; name?: unknown; place?: unknown }) {
+      const actor = await owner(body.ownerPin);
+      const name = typeof body.name === 'string' ? body.name.trim() : '';
+      const place = typeof body.place === 'string' ? body.place.trim() : '';
+      const why = checkShopDetails(name, place);
+      if (why) throw new SetupError(400, 'invalid', why);
+      ctx.settings.set({ shopName: name, place });
+      return { events: await record(actor, { type: 'shop.details_set', name, place }) };
     },
 
     async setPrinter(body: { name?: unknown; ownerPin?: unknown }) {

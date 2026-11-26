@@ -225,8 +225,17 @@ test('#cameras: the owner sets up cameras, tables, zones and settings as events;
   await setup.cvSettings({ ...pin, mode: 'live', shortVisitS: 1, leftCheckS: 1, autoFreeS: 1, cpuLimit: 5 } as never);
 
   const stored = (await store.pull(named.shopId, 0, 100)).map((s) => s.event);
-  assert.deepEqual(stored.map((e) => e.type), ['vision.cameras_set', 'table.layout_set', 'vision.zones_set', 'vision.settings_set']);
-  assert.ok(stored.every((e) => e.shopId === named.shopId && 'actor' in e && e.actor.role === 'owner' && e.actor.name === 'Nisal Vimukthi'));
+  // Naming the shop is the first event: every screen, the bill and the phone show its name (shopDetails.ts).
+  assert.deepEqual(stored.map((e) => e.type), ['shop.details_set', 'vision.cameras_set', 'table.layout_set', 'vision.zones_set', 'vision.settings_set']);
+  assert.deepEqual(stored[0], { ...stored[0], type: 'shop.details_set', name: 'CheesyBeez', place: 'Thalwila', actor: { id: 'melo-pos', name: 'Melo POS', role: 'owner' } },
+    'recorded by the POS itself: no owner existed yet');
+  assert.ok(stored.slice(1).every((e) => e.shopId === named.shopId && 'actor' in e && e.actor.role === 'owner' && e.actor.name === 'Nisal Vimukthi'));
+  // Shop setup › Shop: the owner renames the shop with his PIN; a wrong PIN or Sinhala letters are refused.
+  assert.equal((await setup.shopDetails({ ownerPin: '0000', name: 'Sunrise Cafe', place: 'Galle' }).then(() => ({ status: 200 }), (e: { status: number }) => e)).status, 401);
+  assert.equal((await setup.shopDetails({ ownerPin: '1234', name: 'බටකඩේ', place: 'Galle' }).then(() => ({ status: 200 }), (e: { status: number }) => e)).status, 400);
+  const renamed = await setup.shopDetails({ ownerPin: '1234', name: 'Sunrise Cafe', place: 'Galle' });
+  assert.deepEqual(renamed.events.map((e) => [e.type, 'name' in e && e.name, 'actor' in e && e.actor.name]), [['shop.details_set', 'Sunrise Cafe', 'Nisal Vimukthi']]);
+  assert.equal(settings.get().shopName, 'Sunrise Cafe', 'the cloud enrolment and the PC itself use it too');
   const v = visionFromEvents(stored);
   assert.equal(v.settings.mode, 'live');
   assert.doesNotMatch(JSON.stringify(stored.at(-1)), /cpuLimit|shortVisitS/, 'only On or Off is saved');

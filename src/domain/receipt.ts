@@ -12,6 +12,7 @@ import { lineItemName } from './halves.ts';
 import { RECEIPT_LOGO } from './receiptLogo.ts';
 import { COMB } from './receiptComb.ts';
 import { SHOP_NAME } from '../shop/identity.ts';
+import { shopDetails } from './shopDetails.ts';
 
 /**
  * The customer receipt for the Xprinter XP-80T (80 mm, ESC/POS), in two
@@ -39,13 +40,18 @@ export interface ShopHeader {
 }
 
 /**
- * Bata Kade's bill (owner, 2026-11-26: less paper): its logo small, with the name the shop trades
- * under, its address and phone beside it, all centred. The logo is Bata Kade's; the name on the
- * bill is Dhanuja Cafe, while the screens keep SHOP_NAME (identity.ts).
+ * The bill's header before the shop is named: the product's name, large, no logo (Melo POS has none
+ * yet). Once named, `shopHeader()` puts the shop's own name and town there (shopDetails.ts).
  */
 export const SHOP_HEADER: ShopHeader = {
   name: SHOP_NAME, tagline: '', lines: [], phone: '', logo: false,
   footer: 'Thank you! Come again.',
+};
+
+/** The header every bill prints now: the shop's own name, its town under it (shopDetails.ts). */
+export const shopHeader = (): ShopHeader => {
+  const d = shopDetails();
+  return d ? { ...SHOP_HEADER, name: d.name, lines: d.place ? [d.place] : [] } : SHOP_HEADER;
 };
 
 export interface ReceiptLine {
@@ -158,7 +164,7 @@ export function receipt(
   },
 ): ReceiptLine[] {
   // The cashier is not printed (owner, 2026-11-26: less paper); the other bills still print it.
-  const { shop = SHOP_HEADER, width = RECEIPT_WIDTH, copy = false, offers = null, madeIn = null } = opts;
+  const { shop = shopHeader(), width = RECEIPT_WIDTH, copy = false, offers = null, madeIn = null } = opts;
   const boxes = boxesIn(paid.lines);
   // The short bill (owner, 2026-11-26): header, a solid line, Bill / Take Away / date on one line.
   const out: ReceiptLine[] = [
@@ -288,7 +294,7 @@ export interface DeliveryBillOrder {
 export function deliveryBill(
   o: DeliveryBillOrder, prices: Cents[], opts: { at: number; shop?: ShopHeader; width?: number },
 ): ReceiptLine[] {
-  const { at, shop = SHOP_HEADER, width = RECEIPT_WIDTH } = opts;
+  const { at, shop = shopHeader(), width = RECEIPT_WIDTH } = opts;
   const out: ReceiptLine[] = [
     ...billTop(shop),
     { text: 'DELIVERY', center: true, bold: true },
@@ -365,7 +371,7 @@ export function changedBill(
   paid: PaidOrder, blocks: ChangeBlock[],
   opts: { cashier: string; shop?: ShopHeader; width?: number; copy?: boolean },
 ): ReceiptLine[] {
-  const { shop = SHOP_HEADER, width = RECEIPT_WIDTH, copy = false } = opts;
+  const { shop = shopHeader(), width = RECEIPT_WIDTH, copy = false } = opts;
   const now = blocks.at(-1);
   const before = paid.total + blocks.slice(0, -1).reduce((n, b) => n + b.amount, 0);
   // The short bill's layout (owner, 2026-11-26): no black band, no cashier, one big line (TOTAL).
@@ -593,7 +599,7 @@ export function partSlip(
   o: { number: number; amount: Cents; tender: Tender; tendered: Cents; left: Cents; lines: string[] },
   opts: { at: number; cashier: string; shop?: ShopHeader; width?: number },
 ): ReceiptLine[] {
-  const { at, cashier, shop = SHOP_HEADER, width = RECEIPT_WIDTH } = opts;
+  const { at, cashier, shop = shopHeader(), width = RECEIPT_WIDTH } = opts;
   const out: ReceiptLine[] = [
     { text: shop.name, center: true, bold: true, big: true },
     { text: 'PART PAYMENT', center: true, bold: true },

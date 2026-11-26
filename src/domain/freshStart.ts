@@ -42,6 +42,8 @@ const SETUP = new Set<string>([
   ...SHOP_EVENT_TYPES,
   // The owner's line on the bill (billExtras.ts).
   'shop.bill_line_set',
+  // The shop's own name and town (shopDetails.ts).
+  'shop.details_set',
   // Which modules the developers turned on (modules.ts).
   ...MODULE_EVENT_TYPES,
 ]);

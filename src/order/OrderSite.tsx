@@ -6,7 +6,7 @@ import {
   clockText, normalisePhone, onlineLineTotal, onlineTotal, statusText, type DeliveryPin, type DeliveryQuote, type OnlineKind, type OnlineLine,
 } from '../domain/online.ts';
 import { SHOP_HEADER } from '../domain/receipt.ts';
-import { SHOP_NAME } from '../shop/identity.ts';
+import { setShopDetails, shopName } from '../domain/shopDetails.ts';
 import type { Category, MenuItem, MenuTag, SizeId } from '../domain/types.ts';
 import { useInstall } from '../services/ownerApp.ts';
 import { AppInstall, fromBill } from './AppInstall.tsx';
@@ -395,7 +395,7 @@ const phoneText = (p: string) => `${p.slice(0, 3)} ${p.slice(3, 6)} ${p.slice(6)
 /** Where to collect: the owner's address once given (ORDER_ADDRESS), else the town, and a Maps search for it. */
 const pickupPlace = (shop: ShopInfo | null) => {
   const place = shop?.address ?? SHOP_HEADER.lines.join(' ');
-  return { place, maps: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${SHOP_NAME} ${place}`)}` };
+  return { place, maps: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${shopName()} ${place}`)}` };
 };
 
 function PickupInfo({ shop }: { shop: ShopInfo | null }) {
@@ -405,7 +405,7 @@ function PickupInfo({ shop }: { shop: ShopInfo | null }) {
     <section className="o-panel o-info" aria-label="Pickup info">
       <h2 className="o-panel__title">Pickup info</h2>
       <ul className="o-info__rows">
-        <li><MapPin aria-hidden /><span>{SHOP_NAME}, {place}<br /><a href={maps} target="_blank" rel="noopener noreferrer">Open in Maps</a></span></li>
+        <li><MapPin aria-hidden /><span>{shopName()}, {place}<br /><a href={maps} target="_blank" rel="noopener noreferrer">Open in Maps</a></span></li>
         {shop?.hours && <li><Clock aria-hidden /><span>Daily {clockText(shop.hours.opens)} – {clockText(shop.hours.closes)}</span></li>}
         <li><Banknote aria-hidden /><span>Pay when you collect: cash or bank transfer</span></li>
       </ul>
@@ -632,7 +632,7 @@ function Status({ placed, onDone, onAgain, onBack }: { placed: Placed; onDone: (
           </>)}
           {order.status === 'delivered' && (<>
             <h1>Enjoy your meal</h1>
-            <p className="o-lead">Thank you for ordering from {SHOP_NAME}.</p>
+            <p className="o-lead">Thank you for ordering from {shopName()}.</p>
           </>)}
           {!delivery && order.status === 'accepted' && (<>
             <p className="o-kicker">Your order number</p>
@@ -646,7 +646,7 @@ function Status({ placed, onDone, onAgain, onBack }: { placed: Placed; onDone: (
           </>)}
           {order.status === 'collected' && (<>
             <h1>Enjoy your meal</h1>
-            <p className="o-lead">Thank you for ordering from {SHOP_NAME}.</p>
+            <p className="o-lead">Thank you for ordering from {shopName()}.</p>
           </>)}
           {order.status === 'declined' && (<>
             <h1>Sorry, the shop couldn’t take this order</h1>
@@ -715,6 +715,7 @@ export function OrderSite() {
     api.shop().then((s) => {
       if (n !== checks.current) return;
       if (s.menuState) setMenuState(s.menuState);
+      setShopDetails({ name: s.name, place: s.address ?? '' }); // the shop's own name everywhere on the site
       setShop(s);
       setTaking(s.open ? 'open' : 'closed');
     }, () => { if (n === checks.current) setTaking('failed'); });
@@ -831,13 +832,13 @@ export function OrderSite() {
           </main>
           <MoodStrip id="end">
             <p className="o-strip__meta">
-              {SHOP_NAME}, {pickupPlace(shop).place}
+              {shopName()}, {pickupPlace(shop).place}
               {shop?.hours && <> · Daily {clockText(shop.hours.opens)} – {clockText(shop.hours.closes)}</>}
               {' · '}<a href={pickupPlace(shop).maps} target="_blank" rel="noopener noreferrer">Open in Maps</a>
             </p>
           </MoodStrip>
           <Offers />
-          <footer className="o-foot">{SHOP_NAME}</footer>
+          <footer className="o-foot">{shopName()}</footer>
         </div>
         <aside className="o-side" aria-label="Your order and pickup">
           <CartPanel basket={basket} onChange={setBasket} onCheckout={() => setCheckout(true)} />
@@ -881,7 +882,7 @@ function Header({ taking, shop, onRetry, onSeeOrder, account, onAccount }: {
     <header className="o-head">
       <div className="o-wrap o-head__in">
         <span className="o-brand">
-          <img src="/icons/icon-192.png" alt="" width={32} height={32} />{SHOP_NAME}
+          <img src="/icons/icon-192.png" alt="" width={32} height={32} />{shopName()}
         </span>
         <span className="o-head__end">
         {/* The offers this phone received (CRM): a bell, only once offers are on. */}

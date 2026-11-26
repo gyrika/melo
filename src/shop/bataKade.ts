@@ -3,9 +3,10 @@ import { MENU } from '../domain/menu.ts';
 import type { MenuEvent, NewItem } from '../domain/menuEdits.ts';
 import type { SectionSetting } from '../domain/sections.ts';
 import type { Category, MenuItem } from '../domain/types.ts';
+import { MENU_INSTALLER } from './starterMenu.ts';
 
 /*
- * Bata Kade's menu (melo, 2026-11-16): ERP's counter, copied as it is, sells Bata Kade's food. The
+ * Bata Kade's menu (melo, 2026-11-16; since 2026-11-26 only the demo's, `?demo`: a real shop starts empty, starterMenu.ts): ERP's counter, copied as it is, sells Bata Kade's food. The
  * menu goes in as ERP's own menu events (sections, items, the printed CheesyBeez items hidden), sent
  * by the shop server on the counter's first pull (server/firstMenu.ts). Names, Sinhala names and
  * prices = melo main's menu as it stands (price list 2026-11-13, changes 2026-11-14), copied by
@@ -17,8 +18,8 @@ import type { Category, MenuItem } from '../domain/types.ts';
  * everything goes to it.
  */
 
-/** Who added the menu: the POS itself, not a person (it shows in the audit as this). */
-export const MENU_INSTALLER: Actor = { id: 'melo-pos', name: 'Melo POS', role: 'owner' };
+/** Who added the menu: the POS itself (starterMenu.ts). */
+export { MENU_INSTALLER };
 
 const PORTIONS: SectionSetting['sizes'] = [{ id: 'x1', label: 'Half' }, { id: 'x2', label: 'Full' }];
 

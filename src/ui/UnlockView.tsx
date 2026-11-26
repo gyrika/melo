@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { MODULE_LABEL, type ModuleId } from '../domain/modules.ts';
 import { setupClient, type ModulesState } from '../services/setupClient.ts';
 import { addEvents } from './eventLog.ts';
-import { SHOP_NAME } from '../shop/identity.ts';
+import { ShopName } from './ShopName.tsx';
 
 /**
  * #unlock: the developers' page, on the shop PC, never in the sidebar or the palette.
@@ -42,7 +42,7 @@ export default function UnlockView({ onClose }: { onClose: () => void }) {
   return (
     <div className="setup">
       <header className="setup__head">
-        <span className="brand">{SHOP_NAME}</span>
+        <span className="brand"><ShopName /></span>
         <button type="button" className="linkbtn" onClick={onClose}>Close</button>
       </header>
       <main className="setup__main" aria-label="Modules">

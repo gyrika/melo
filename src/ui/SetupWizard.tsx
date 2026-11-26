@@ -11,7 +11,9 @@ import { restartApp } from './restart.ts';
 import { OwnerNav } from './OwnerNav.tsx';
 import { TestDataTab } from './TestDataTab.tsx';
 import { CounterTab } from './CounterTab.tsx';
-import { SHOP_NAME, PRODUCT_NAME } from '../shop/identity.ts';
+import { PRODUCT_NAME } from '../shop/identity.ts';
+import { ShopName, useShopName } from './ShopName.tsx';
+import { SHOP_NAME_MAX, SHOP_PLACE_MAX, checkShopDetails, shopDetails } from '../domain/shopDetails.ts';
 
 /**
  * Setting up the shop, on the shop PC itself. Serves whoever sets it up,
@@ -26,8 +28,8 @@ const FIRST: Step[] = ['shop', 'printer', 'staff', 'cloud', 'devices'];
 const TITLES: Record<Step, string> = {
   shop: 'Name your shop', printer: 'Your receipt printer', staff: 'Your staff', cloud: 'Connect to the cloud', devices: 'Connect your devices',
 };
-type Tab = Exclude<Step, 'shop'> | 'counter' | 'updates' | 'testData';
-const TAB_LABEL: Record<Tab, string> = { staff: 'Staff', printer: 'Printer', cloud: 'Cloud', devices: 'Devices', counter: 'This counter', updates: 'Updates', testData: 'Test data' };
+type Tab = Step | 'counter' | 'updates' | 'testData';
+const TAB_LABEL: Record<Tab, string> = { shop: 'Shop', staff: 'Staff', printer: 'Printer', cloud: 'Cloud', devices: 'Devices', counter: 'This counter', updates: 'Updates', testData: 'Test data' };
 const ROLES: { id: Role; label: string }[] = [
   { id: 'cashier', label: 'Cashier' }, { id: 'manager', label: 'Manager' }, { id: 'owner', label: 'Owner' }, { id: 'kitchen', label: 'Kitchen' },
 ];
@@ -65,11 +67,47 @@ function ShopStep({ state, onDone }: { state: SetupState; onDone: () => void }) 
   return (
     <form className="setup__form" onSubmit={(e) => void submit(e)}>
       <label className="setup__field"><span>Shop name</span>
-        <input autoFocus value={name} placeholder={SHOP_NAME} onChange={(e) => setName(e.target.value)} /></label>
+        <input autoFocus value={name} placeholder="Sunrise Cafe" maxLength={SHOP_NAME_MAX} onChange={(e) => setName(e.target.value)} /></label>
       <label className="setup__field"><span>Town</span>
-        <input value={place} placeholder="Thalwila" onChange={(e) => setPlace(e.target.value)} /></label>
+        <input value={place} placeholder="Galle" maxLength={SHOP_PLACE_MAX} onChange={(e) => setPlace(e.target.value)} /></label>
       {error && <p className="setup__error" role="alert">{error}</p>}
       <div className="setup__foot"><button type="submit" className="cta" disabled={!name.trim()}>Next</button></div>
+    </form>
+  );
+}
+
+/**
+ * Shop setup › Shop: the shop's own name and town, on every screen's corner, the bill and the
+ * owner's phone (shopDetails.ts). Saved with the owner's PIN by the shop server.
+ */
+export function ShopTab({ state, ownerPin }: { state: SetupState; ownerPin?: string }) {
+  const shown = useShopName();
+  const saved = shopDetails() ?? { name: state.shop?.name ?? '', place: state.shop?.place ?? '' };
+  const [name, setName] = useState(saved.name);
+  const [place, setPlace] = useState(saved.place);
+  const [error, setError] = useState('');
+  const [done, setDone] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const save = async (e: FormEvent) => {
+    e.preventDefault();
+    const why = checkShopDetails(name.trim(), place.trim());
+    if (why) { setError(`${why[0].toUpperCase()}${why.slice(1)}.`); return; }
+    setError(''); setDone(false); setBusy(true);
+    try { addEvents((await setupClient.shopDetails(name.trim(), place.trim(), ownerPin)).events); setDone(true); }
+    catch (err) { setError(err instanceof Error ? err.message : String(err)); }
+    setBusy(false);
+  };
+  const same = name.trim() === saved.name && place.trim() === saved.place;
+  return (
+    <form className="setup__form" onSubmit={(e) => void save(e)}>
+      <label className="setup__field"><span>Shop name</span>
+        <input value={name} maxLength={SHOP_NAME_MAX} onChange={(e) => { setName(e.target.value); setDone(false); }} /></label>
+      <label className="setup__field"><span>Town</span>
+        <input value={place} maxLength={SHOP_PLACE_MAX} onChange={(e) => { setPlace(e.target.value); setDone(false); }} /></label>
+      <p className="setup__hint">Shown on every screen, on the bill and on your phone. English letters only: the printer has no Sinhala or Tamil.</p>
+      {error && <p className="setup__error" role="alert">{error}</p>}
+      {done && <p className="setup__done" role="status">Saved. Every screen now says {shown}.</p>}
+      <div className="setup__foot"><button type="submit" className="cta" disabled={busy || same || !name.trim()}>Save</button></div>
     </form>
   );
 }
@@ -473,10 +511,11 @@ export function SetupWizard({ mode, onClose }: { mode: Mode; onClose?: () => voi
     body = (
       <>
         <nav className="cats setup__tabs" aria-label="Shop setup">
-          {(['staff', 'printer', 'cloud', 'devices', 'counter', 'updates', 'testData'] as const).map((t) => (
+          {(['shop', 'staff', 'printer', 'cloud', 'devices', 'counter', 'updates', 'testData'] as const).map((t) => (
             <button key={t} type="button" className="pill" aria-pressed={tab === t} onClick={() => setTab(t)}>{TAB_LABEL[t]}</button>
           ))}
         </nav>
+        {tab === 'shop' && <ShopTab state={state} ownerPin={ownerPin} />}
         {tab === 'staff' && <StaffStep initial={staff ?? []} ownerPin={ownerPin} />}
         {tab === 'printer' && <PrinterStep state={state} ownerPin={ownerPin} />}
         {tab === 'cloud' && <CloudStep connected={state.cloud} ownerPin={ownerPin} onConnected={connected} />}
@@ -508,7 +547,7 @@ export function SetupWizard({ mode, onClose }: { mode: Mode; onClose?: () => voi
     <div className="setup">
       {mode === 'manage' ? <OwnerNav current="setup" onRegister={onClose} /> : (
         <header className="setup__head">
-          <span className="brand">{SHOP_NAME}</span>
+          <span className="brand"><ShopName /></span>
         </header>
       )}
       <main className="setup__main" aria-label="Shop setup">

@@ -1,5 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
-import { SHOP_NAME } from '../shop/identity.ts';
+import { shopName } from '../domain/shopDetails.ts';
 
 /**
  * The last line: if a screen fails to draw, the counter shows this instead of an empty window
@@ -21,7 +21,7 @@ export class CrashScreen extends Component<{ children: ReactNode }, { error: Err
     return (
       <main className="lock" aria-label="Something went wrong">
         <div className="lock__card">
-          <span className="brand">{SHOP_NAME}</span>
+          <span className="brand">{shopName()}</span>
           <h1 className="lock__title">This screen could not open</h1>
           <p className="crash__why">{error.message}</p>
           {/* autoFocus: Enter reloads, keyboard first. */}

@@ -119,6 +119,8 @@ export const mayRecord = (role: Role, type: string, remake = false): boolean => 
   if (type === 'shop.started_fresh') return role === 'owner';
   // The owner's line on the bill (SCRUM-256).
   if (type === 'shop.bill_line_set') return role === 'owner';
+  // The shop's own name and town (shopDetails.ts).
+  if (type === 'shop.details_set') return role === 'owner';
   return false;
 };
 

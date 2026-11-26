@@ -2,7 +2,7 @@ import type { BaseUnit } from './inventoryData.ts';
 import type { StockSettings } from './stockSettings.ts';
 import { formatInUnit, type CountUnit } from './counting.ts';
 import { formatQuantity } from './quantity.ts';
-import { SHOP_NAME } from '../shop/identity.ts';
+import { shopName } from './shopDetails.ts';
 
 /**
  * Ordering from a supplier: what the manager needs when an item runs low is the
@@ -16,7 +16,7 @@ export interface OrderLine { name: string; packs: number; packQty: number; baseU
  * "2 × Mozzarella (Prabhat) (2 kg packs)", or "Flour: 50 kg" for an item bought by the kg,
  * one line per item; lines with no packs are left out.
  */
-export const orderMessage = (lines: readonly OrderLine[], shop = SHOP_NAME, intro = `Hi, this is ${shop}. Please send:`): string => [
+export const orderMessage = (lines: readonly OrderLine[], shop = shopName(), intro = `Hi, this is ${shop}. Please send:`): string => [
   intro,
   ...lines.filter((l) => l.packs > 0).map((l) => (l.unit && l.unit.id !== 'pack'
     ? `${l.name}: ${formatInUnit(l.packs, l.unit, l.packQty)}`

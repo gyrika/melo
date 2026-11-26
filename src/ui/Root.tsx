@@ -20,7 +20,7 @@ import { SetupWizard } from './SetupWizard.tsx';
 import { useVoice, VoiceNote } from './VoiceKey.tsx';
 import { navigate, onNavigate, startNav, useBackKeys } from './nav.ts';
 import { kitchenScreenOn } from './kitchenScreen.ts';
-import { SHOP_NAME } from '../shop/identity.ts';
+import { ShopName } from './ShopName.tsx';
 
 /** The developers' module codes (#unlock): opened once in a shop's life. */
 const UnlockView = lazy(() => import('./UnlockView.tsx'));
@@ -86,7 +86,7 @@ function NotConnected() {
   return (
     <main className="lock" aria-label="Not connected">
       <div className="lock__card owner-welcome">
-        <span className="brand">{SHOP_NAME}</span>
+        <span className="brand"><ShopName /></span>
         <h1 className="lock__title">This device is not connected yet</h1>
         <p>On the shop PC: Manager mode → Ctrl+K → Shop setup → Devices, then scan the QR code with this device.</p>
       </div>

@@ -3,7 +3,7 @@ import { canManage, type Actor } from '../domain/auth.ts';
 import { businessDayStart, cashOutsBetween, MAX_NAME, namesByUse, parseCashOut } from '../domain/cashOut.ts';
 import { fmt } from '../domain/money.ts';
 import { currentCashier } from '../services/auth.ts';
-import { SHOP_NAME } from '../shop/identity.ts';
+import { ShopName } from './ShopName.tsx';
 import { appendEvent, readAll, subscribeEvents } from './eventLog.ts';
 import { OwnerNav } from './OwnerNav.tsx';
 import { PinSheet } from './PinSheet.tsx';
@@ -81,7 +81,7 @@ export function CashOut({ onBack, nav = true }: {
     <div className="inv-page">
       {nav ? <OwnerNav current="cashout" onRegister={onBack} /> : (
         <header className="cashout__bar">
-          <span className="brand">{SHOP_NAME}</span>
+          <span className="brand"><ShopName /></span>
           <button type="button" className="corner__key" onClick={onBack}>Register <kbd>Esc</kbd></button>
         </header>
       )}

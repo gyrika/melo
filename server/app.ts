@@ -162,6 +162,8 @@ export function createApp({ store, staticDir, printer, onStored, online, cloudSt
     if (e.type === 'shop.started_fresh') return "test data is cleared in Settings on the shop PC";
     // The owner's line on the bill: Settings › Printer on the shop PC, with his PIN.
     if (e.type === 'shop.bill_line_set') return "the bill's line is set in Settings on the shop PC";
+    // The shop's name and town: the setup wizard or Shop setup › Shop on the shop PC, with the owner's PIN.
+    if (e.type === 'shop.details_set') return "the shop's name is set in Shop setup on the shop PC";
     // Modules are turned on and off with the developers' password on the shop PC (modules.ts), never by a device.
     if (e.type === 'shop.module_set') return "modules are changed with the developers' password on the shop PC";
     // Campaigns are sent by the shop server itself (server/crm/), which records them; never a device.
@@ -240,7 +242,7 @@ export function createApp({ store, staticDir, printer, onStored, online, cloudSt
         }
         const body = ((await readBody(req)) ?? {}) as Record<string, unknown>;
         const routes: Record<string, (b: Record<string, unknown>) => Promise<unknown>> = {
-          '/shop': setup.nameShop, '/printer': setup.setPrinter, '/staff': setup.addStaff, '/staff/list': setup.staff,
+          '/shop': setup.nameShop, '/shop-details': setup.shopDetails, '/printer': setup.setPrinter, '/staff': setup.addStaff, '/staff/list': setup.staff,
           '/staff/remove': setup.removeStaff, '/pair': setup.pair, '/cloud': setup.connectCloud, '/finish': () => setup.finish(),
           '/update/check': setup.checkUpdate, '/update/install': setup.installUpdate, '/update/status': setup.updateStatus,
           '/cv/status': setup.cvStatus, '/cv/activate': setup.cvActivate, '/cv/setup': setup.cvSetup, '/cv/scan': setup.cvScan,

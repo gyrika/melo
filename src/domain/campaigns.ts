@@ -2,6 +2,7 @@ import type { Actor } from './auth.ts';
 import { SEGMENTS, type Segment } from './customers.ts';
 import type { SyncEvent } from './sync.ts';
 import { SHOP_NAME } from '../shop/identity.ts';
+import { shopDetailsOf } from './shopDetails.ts';
 
 /**
  * Push campaigns (CRM): the owner writes a short message to a segment; the shop server sends it as
@@ -106,12 +107,14 @@ export const checkCampaignEvent = (e: Record<string, unknown>): string | null =>
 export const DEFAULT_WINBACK: Message & { on: boolean } = {
   on: false,
   title: `We miss you at ${SHOP_NAME}`,
-  body: 'It has been a while. Come by for a hot pizza this week.',
+  body: 'It has been a while. Come by and see us this week.',
 };
 
 /** The automatic "we miss you" as the owner last set it (off until he turns it on). */
 export const winbackFromEvents = (events: readonly SyncEvent[]): Message & { on: boolean } => {
-  let out = DEFAULT_WINBACK;
+  // The shop's own name (shopDetails.ts), from the same events: here, on the phone and on the shop server.
+  const shop = shopDetailsOf(events)?.name;
+  let out = shop ? { ...DEFAULT_WINBACK, title: `We miss you at ${shop}` } : DEFAULT_WINBACK;
   for (const e of events) if (e.type === 'crm.auto_set') out = { on: e.on, title: e.title, body: e.body };
   return out;
 };

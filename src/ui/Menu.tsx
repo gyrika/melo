@@ -110,6 +110,14 @@ export function Menu({ category, onCategory, onQuickAdd, onCustomise, onAddCombo
         {onType && <button type="button" className="typeit" onClick={onType}>Type an order…</button>}
       </nav>
 
+      {/* A new shop starts with no dishes (starterMenu.ts): say where they come from, not a blank page. */}
+      {showing !== 'combos' && !items.some((m) => !m.hidden) && (
+        <div className="menu-empty" role="status">
+          <b>No dishes yet</b>
+          <span>The owner adds sections and dishes on the Menu screen. They show up here at once.</span>
+          <a className="pill" href="#menu">Open the Menu screen</a>
+        </div>
+      )}
       {showing === 'combos' ? (
         <div className="grid">
           {combos.map(({ id, combo }) => {

@@ -16,7 +16,7 @@ import { isManagerPhone } from '../services/pairing.ts';
 import { signedIn, subscribeAuth } from '../services/serverAuth.ts';
 import { CommandPalette } from './CommandPalette.tsx';
 import { restartHere } from './nav.ts';
-import { SHOP_NAME } from '../shop/identity.ts';
+import { ShopName } from './ShopName.tsx';
 
 export type Section = PartId;
 
@@ -134,12 +134,12 @@ export function OwnerNav({ current, onRegister, drawer: held, onDrawer }: {
             <line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="14" y2="17" />
           </svg>
         </button>
-        <span className="side-top__title">{here?.label ?? SHOP_NAME}</span>
+        <span className="side-top__title">{here?.label ?? <ShopName />}</span>
       </div>}
       {drawer && <div className="side__scrim" onClick={() => setDrawer(false)} />}
       <nav className={`side${drawerOnly ? ' side--drawer' : ''}${drawer ? ' side--open' : ''}`} aria-label="Owner sections">
         <div className="side__head">
-          <span className="brand">{SHOP_NAME}</span>
+          <span className="brand"><ShopName /></span>
         </div>
         {!phone && (
           <button type="button" className="side__ask" onClick={() => setAsking(true)}>

@@ -59,6 +59,7 @@ export const setupClient = {
   startFresh: (before: number, ownerPin?: string) => call<{ events: SyncEvent[] }>('/fresh-start', { before, ownerPin }),
   /** The owner's line on the bill (SCRUM-256); '' takes it off. */
   billLine: (text: string, ownerPin?: string) => call<{ events: SyncEvent[] }>('/bill-line', { text, ownerPin }),
+  shopDetails: (name: string, place: string, ownerPin?: string) => call<{ events: SyncEvent[] }>('/shop-details', { name, place, ownerPin }),
   /** #unlock (modules.ts): the shop's id and which modules are on. */
   modules: () => call<ModulesState>('/modules', {}),
   /** The developers' password turns a module on or off. */

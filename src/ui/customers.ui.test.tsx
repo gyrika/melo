@@ -161,7 +161,7 @@ test('Campaigns: the owner picks who, sees the reach, writes two lines and sends
   expect(within(screen.getByRole('region', { name: 'Sent' })).getByText('Thank you')).toBeTruthy();
 
   await user.click(screen.getByRole('button', { name: 'Turn on' }));
-  expect(crm.setAuto).toHaveBeenCalledWith(true, 'We miss you at Melo POS', 'It has been a while. Come by for a hot pizza this week.');
+  expect(crm.setAuto).toHaveBeenCalledWith(true, 'We miss you at Melo POS', 'It has been a while. Come by and see us this week.');
   expect(await screen.findByText('“We miss you” is on.')).toBeTruthy();
 });
 

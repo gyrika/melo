@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { formatLkMobile, toLkMobile } from '../domain/phone.ts';
 import { api, remembered } from './api.ts';
 import { isOrderAppHost } from './pwa.ts';
-import { SHOP_NAME } from '../shop/identity.ts';
+import { ShopNameText } from '../ui/ShopName.tsx';
 
 /**
  * "Get offers on this phone" (CRM): the customer allows notifications and gives their mobile number,
@@ -72,7 +72,7 @@ export function Offers() {
     // iPhones take notifications only from the app added to the Home Screen.
     return isIphone() ? (
       <section className="o-offers o-wrap" aria-label="Offers">
-        <p><b>Offers on your iPhone:</b> tap Share, then “Add to Home Screen”, and open {SHOP_NAME} from there.</p>
+        <p><b>Offers on your iPhone:</b> tap Share, then “Add to Home Screen”, and open <ShopNameText /> from there.</p>
       </section>
     ) : null;
   }
@@ -112,7 +112,7 @@ export function Offers() {
           <button type="button" className="o-link" onClick={() => void turnOff()}>Stop offers</button>
         </>
       ) : state.at === 'blocked' ? (
-        <p>Notifications are blocked for {SHOP_NAME} on this phone. Allow them in the phone’s settings, then try again.</p>
+        <p>Notifications are blocked for <ShopNameText /> on this phone. Allow them in the phone’s settings, then try again.</p>
       ) : state.at === 'off' ? (
         <>
           <p><b>Get our offers on this phone.</b> A few a month. No app, no SMS, no login. Stop any time.</p>
@@ -130,7 +130,7 @@ export function Offers() {
           </label>
           <button type="submit" className="o-primary" disabled={state.at === 'working'}>{state.at === 'working' ? 'Turning on…' : 'Turn on offers'}</button>
           <p className="o-offers__next"><b>Next:</b> your phone asks “Allow notifications?” Tap Allow.</p>
-          {isIphone() && <p className="o-offers__hint">iPhone: Share, then Add to Home Screen, and open {SHOP_NAME} from there.</p>}
+          {isIphone() && <p className="o-offers__hint">iPhone: Share, then Add to Home Screen, and open <ShopNameText /> from there.</p>}
         </form>
       )}
       {error && <p className="o-offers__error" role="alert">{error}</p>}

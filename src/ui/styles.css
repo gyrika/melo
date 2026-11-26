@@ -444,6 +444,9 @@ kbd { font: inherit; font-size: 11px; font-weight: 600; line-height: 1; padding:
 .panel__foot .cta { height: var(--cta-h); font-size: var(--fs-l); }
 .empty { margin: auto 0; display: flex; flex-direction: column; gap: var(--sp-2); color: var(--ink-3); font-size: var(--fs-m); line-height: 1.5; letter-spacing: -0.2px; }
 .empty b { color: var(--ink-2); font-weight: 500; }
+.menu-empty { margin: var(--sp-4) 0; display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-2); color: var(--ink-3); font-size: var(--fs-m); line-height: 1.5; }
+.menu-empty b { color: var(--ink-2); font-weight: 500; }
+.menu-empty .pill { display: inline-flex; align-items: center; text-decoration: none; margin-top: var(--sp-1); background: var(--pill-on); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
 
 .paid { flex: 1; padding: var(--sp-4) var(--sp-5) 0; display: flex; flex-direction: column; justify-content: center; gap: 10px; animation: rise 220ms var(--ease); }
 .paid__label { font-size: 15px; color: var(--ink-2); }

@@ -16,7 +16,7 @@ import { ChatGptLink } from './ChatGptLink.tsx';
 import { OwnerNav } from './OwnerNav.tsx';
 import { GlanceSkeleton, GlanceView } from './Glance.tsx';
 import { glanceOf } from '../domain/glance.ts';
-import { SHOP_NAME } from '../shop/identity.ts';
+import { ShopName } from './ShopName.tsx';
 
 /**
  * The Owner view. Serves the owner: they know the shop, not the screens, and
@@ -166,7 +166,7 @@ export function OwnerView({ phone = false, onBack, shop }: {
         </header>
       ) : phone ? (
         <header className="owner__head">
-          <span className="brand">{SHOP_NAME}</span>
+          <span className="brand"><ShopName /></span>
           {data.state !== 'loading' && <span className="owner__updated">Updated {timeOf(at)}</span>}
         </header>
       ) : <OwnerNav current="owner" onRegister={onBack} />}
@@ -178,7 +178,7 @@ export function OwnerView({ phone = false, onBack, shop }: {
 
         {offerInstall && install.kind === 'button' && (
           <p className="owner__install">
-            <span>Put {SHOP_NAME} on your home screen.</span>
+            <span>Put <ShopName /> on your home screen.</span>
             <button type="button" className="insight__action" onClick={install.install}>Install app</button>
           </p>
         )}

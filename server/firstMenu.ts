@@ -1,12 +1,12 @@
-import { bataKadeMenuEvents } from '../src/shop/bataKade.ts';
+import { starterMenuEvents } from '../src/shop/starterMenu.ts';
 import type { SyncedEvent } from '../src/domain/sync.ts';
 import type { Device, EventStore } from './store.ts';
 
 /**
- * Bata Kade's menu ships with the app (src/shop/bataKade.ts). Each time the server starts, the shop's
- * counter's first pull stores it as ordinary menu events, so it reaches the counter, the kitchen and
- * the cloud like a menu typed in by hand. The events' fixed ids make this a no-op once they are
- * stored: the menu is never doubled, an item the owner took off stays off, and his own price changes
+ * A new shop starts with an empty menu (src/shop/starterMenu.ts: the code's printed CheesyBeez items
+ * hidden). Each time the server starts, the shop's counter's first pull stores those events like a
+ * menu change typed in by hand, so they reach the counter, the kitchen and the cloud. The events'
+ * fixed ids make this a no-op once they are stored: nothing is doubled, and the owner's own changes
  * (newer events) stay.
  */
 export function firstMenu({ store, shopId, now = Date.now }: {
@@ -14,8 +14,8 @@ export function firstMenu({ store, shopId, now = Date.now }: {
 }): (device: Device) => Promise<SyncedEvent[]> {
   const asked = new Map<string, Promise<SyncedEvent[]>>();
   const add = async (device: Device): Promise<SyncedEvent[]> => {
-    const { stored } = await store.push(device, bataKadeMenuEvents(device.tenantId, now()), now());
-    if (stored.length) console.log(`Added the shop's menu: ${stored.length} menu events`);
+    const { stored } = await store.push(device, starterMenuEvents(device.tenantId, now()), now());
+    if (stored.length) console.log(`Set up the starter menu: ${stored.length} menu events`);
     return stored;
   };
   return (device) => {
