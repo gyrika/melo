@@ -42,7 +42,7 @@ one script, and after that everything (updates, checks, fixes) is done remotely.
 On the shop PC: Start > type **PowerShell** > right-click > **Run as administrator**, then paste:
 
 ```powershell
-irm https://raw.githubusercontent.com/gyrika/ERP/main/deploy/windows/get.ps1 | iex
+irm https://raw.githubusercontent.com/gyrika/melo/main/deploy/windows/get.ps1 | iex
 ```
 
 It downloads the POS to `C:\CheesyBeez\ERP` and runs `deploy\windows\install.ps1`, which:
