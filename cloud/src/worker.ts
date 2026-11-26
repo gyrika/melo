@@ -33,7 +33,7 @@ interface Env {
   /** The developer's /admin password (npm run admin-key in cloud/). */
   ADMIN_KEY?: string;
   /**
-   * The CheesyBeez Android app (a TWA of cheesybeez.com, twa/README.md): its package name and the SHA-256
+   * The Melo POS Android app (a TWA of cheesybeez.com, twa/README.md): its package name and the SHA-256
    * fingerprint(s) of its signing key, comma-separated (wrangler.toml [vars]). Unset: no app is vouched for.
    */
   TWA_PACKAGE?: string;
@@ -52,8 +52,8 @@ interface Env {
  * exactly as in the QR code it came from.
  */
 export const ownerManifest = (key: string | null) => ({
-  name: 'CheesyBeez Owner',
-  short_name: 'CheesyBeez',
+  name: 'Melo POS Owner',
+  short_name: 'Melo POS',
   description: "Today's takings and anything that needs you, from anywhere.",
   start_url: key && /^[A-Za-z0-9_-]{20,64}$/.test(key) ? `/?owner=${key}#owner` : '/#owner',
   scope: '/',
@@ -71,7 +71,7 @@ export const ownerManifest = (key: string | null) => ({
 /** The manager's phone app (SCRUM-94): the same app, opening on the counts with that phone's key. */
 export const managerManifest = (key: string | null) => ({
   ...ownerManifest(null),
-  name: 'CheesyBeez Manager',
+  name: 'Melo POS Manager',
   short_name: 'CB Manager',
   description: "Today's counts, from the shelf.",
   id: '/manager',
@@ -79,9 +79,9 @@ export const managerManifest = (key: string | null) => ({
 });
 
 export const orderManifest = (customerDomain: boolean) => ({
-  name: 'CheesyBeez Ordering',
-  short_name: 'CheesyBeez',
-  description: 'Order pizza, burgers and pasta for pickup at CheesyBeez.',
+  name: 'Melo POS Ordering',
+  short_name: 'Melo POS',
+  description: 'Order for pickup.',
   start_url: customerDomain ? '/' : '/order',
   scope: customerDomain ? '/' : '/order',
   display: 'standalone',

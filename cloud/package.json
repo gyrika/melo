@@ -1,5 +1,5 @@
 {
-  "name": "cheesybeez-cloud",
+  "name": "melo-cloud",
   "private": true,
   "type": "module",
   "description": "The cloud copy of every shop's events (SCRUM-61), on Cloudflare Workers + D1.",

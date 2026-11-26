@@ -6,21 +6,21 @@ import { isNewer } from '../src/domain/version.ts';
 export { isNewer };
 
 /**
- * "Update now" in Shop setup. Lume POS keeps its version beside the
+ * "Update now" in Shop setup. Melo POS keeps its version beside the
  * program (version.txt) and an updater script (station-update.ps1, also run
  * every 5 minutes). This asks GitHub for the latest release and, when the
  * owner says so, runs that updater straight away. In development there is no
  * Station, so there is nothing to update.
  */
-const LATEST = 'https://api.github.com/repos/gyrika/possaas/releases/latest';
+const LATEST = 'https://api.github.com/repos/gyrika/melo/releases/latest';
 
 /**
- * On: LATEST is possaas' own public releases (no other repository). Turned off and on together with $UpdatesOn in deploy/station/station-update.ps1.
+ * On: LATEST is melo's own public releases (no other repository). Turned off and on together with $UpdatesOn in deploy/station/station-update.ps1.
  */
 export const AUTO_UPDATES = true;
 
 /** Registered by deploy/station/station-install.ps1: station-update.ps1 -Force, as SYSTEM. */
-export const UPDATE_NOW_TASK = 'Lume POS update now';
+export const UPDATE_NOW_TASK = 'Melo POS update now';
 
 export interface UpdateCheck {
   current: string;
@@ -63,7 +63,7 @@ export function updatesApi(o: UpdatesOptions) {
 
     async check(): Promise<UpdateCheck> {
       if (!enabled) return { current: current(), latest: null, newer: false, off: true };
-      const r = await http(LATEST, { headers: { 'user-agent': 'Lume-POS', accept: 'application/vnd.github+json' }, signal: AbortSignal.timeout(15_000) });
+      const r = await http(LATEST, { headers: { 'user-agent': 'Melo-POS', accept: 'application/vnd.github+json' }, signal: AbortSignal.timeout(15_000) });
       if (!r.ok) throw new Error(`GitHub answered ${r.status}`);
       const latest = String(((await r.json()) as { tag_name?: string }).tag_name ?? '').replace(/^v/, '') || null;
       const now = current();
@@ -88,7 +88,7 @@ export function updatesApi(o: UpdatesOptions) {
      */
     install(): void {
       if (!enabled) throw new Error('automatic updates are off: run the new Setup.exe on this PC');
-      if (!installable()) throw new Error('updates are installed by Lume POS on Windows');
+      if (!installable()) throw new Error('updates are installed by Melo POS on Windows');
       run('schtasks.exe', ['/Run', '/TN', UPDATE_NOW_TASK]);
     },
   };

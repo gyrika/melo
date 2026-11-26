@@ -1,6 +1,6 @@
 """The receipt logo (SCRUM-254): the shop's logo as 1-bit dots for the XP-80T, written to src/domain/receiptLogo.ts. Needs Pillow.
 
-Bata Kade (possaas): python3 scripts/receipt-logo.py scripts/receipt-logo-source.webp --dark-badge --keep-tagline
+Bata Kade (melo): python3 scripts/receipt-logo.py scripts/receipt-logo-source.webp --dark-badge --keep-tagline
 --dark-badge: the logo is light on a black badge (Bata Kade's): its light parts print, the black stays paper,
 so the printer never burns a solid disc. --keep-tagline: the tagline is part of the picture (printed small)."""
 import os, sys, base64

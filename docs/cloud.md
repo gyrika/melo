@@ -1,6 +1,6 @@
 # The cloud copy (SCRUM-61)
 
-**Live:** https://cheesybeez-cloud.cheesybeez-cloud.workers.dev (Cloudflare Workers + D1, free plan).
+**Live:** https://melobylume.cheesybeez-cloud.workers.dev (Cloudflare Workers + D1, free plan).
 
 ```
  Shop PC: server + MySQL            the truth for selling; works with no internet
@@ -44,14 +44,14 @@ From your laptop, in `cloud/` (logged in with `npx wrangler login`):
 
 ```sh
 npm run device -- --shop cheesybeez-thalwila --name "CheesyBeez Thalwila" \
-  --url https://cheesybeez-cloud.cheesybeez-cloud.workers.dev
+  --url https://melobylume.cheesybeez-cloud.workers.dev
 ```
 
 It prints three lines. Put them in the shop PC's `server\.env` (over AnyDesk) and restart the
 server (or run `deploy\windows\update.ps1 -Force`):
 
 ```
-CLOUD_URL=https://cheesybeez-cloud.cheesybeez-cloud.workers.dev
+CLOUD_URL=https://melobylume.cheesybeez-cloud.workers.dev
 CLOUD_TOKEN=…
 CLOUD_SHOP=cheesybeez-thalwila
 ```
@@ -66,13 +66,13 @@ that holds only the Owner view, so nobody on the internet reaches a register the
 
 - Give the owner their link, once (from your laptop, in `cloud/`):
   ```sh
-  npm run device -- --shop cheesybeez-thalwila --kind owner --url https://cheesybeez-cloud.cheesybeez-cloud.workers.dev
+  npm run device -- --shop cheesybeez-thalwila --kind owner --url https://melobylume.cheesybeez-cloud.workers.dev
   ```
   It prints `…/?owner=<secret>#owner`. Send it privately; opening it on the phone keeps the secret
   there and removes it from the address bar. "Add to Home Screen" makes it an app icon.
 - The phone reads the cloud copy: the first visit loads the shop's history, then every minute only
   what is new. The secret can read that shop's events and nothing else; it can never write.
-- **For the examiners:** `https://cheesybeez-cloud.cheesybeez-cloud.workers.dev/?demo#owner` shows the
+- **For the examiners:** `https://melobylume.cheesybeez-cloud.workers.dev/?demo#owner` shows the
   demo feed (made-up sales), no secret needed. The bare address shows a short welcome page.
 - A lost phone: there is no screen yet to withdraw a link; until there is, delete that device's row
   in D1 (`npx wrangler d1 execute cheesybeez-cloud --remote --command "DELETE FROM devices WHERE id = '…'"`).

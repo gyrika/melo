@@ -52,7 +52,7 @@ test('install: starts the Station updater through its own Windows task, only on 
   const run = (command: string, args: string[]) => ran.push([command, ...args]);
   assert.throws(() => updatesApi({ ...s, enabled: true, platform: 'linux', run }).install(), /on Windows/);
   updatesApi({ ...s, enabled: true, platform: 'win32', run }).install();
-  assert.deepEqual(ran, [['schtasks.exe', '/Run', '/TN', 'Lume POS update now']]);
+  assert.deepEqual(ran, [['schtasks.exe', '/Run', '/TN', 'Melo POS update now']]);
   s.done();
 
   const dev = station(null);

@@ -9,14 +9,14 @@ afterEach(() => { cleanup(); history.replaceState(null, '', '/'); });
 
 test('not from the bill: nothing', () => {
   render(<AppInstall />);
-  expect(screen.queryByRole('region', { name: 'Get the CheesyBeez app' })).toBeNull();
+  expect(screen.queryByRole('region', { name: 'Get the Melo POS app' })).toBeNull();
 });
 
 test('from the bill, a browser that offers it: one Install button; × hides it and drops #app', async () => {
   history.replaceState(null, '', '/#app');
   const user = userEvent.setup();
   render(<AppInstall />);
-  const card = screen.getByRole('region', { name: 'Get the CheesyBeez app' });
+  const card = screen.getByRole('region', { name: 'Get the Melo POS app' });
   expect(card.textContent).toMatch(/Add to Home screen/); // before the browser offers it: the menu way
   let prompted = false;
   const offer = Object.assign(new Event('beforeinstallprompt'), { prompt: async () => { prompted = true; } });
@@ -24,7 +24,7 @@ test('from the bill, a browser that offers it: one Install button; × hides it a
   await user.click(screen.getByRole('button', { name: 'Install app' }));
   expect(prompted).toBe(true);
   await user.click(screen.getByRole('button', { name: 'Close' }));
-  expect(screen.queryByRole('region', { name: 'Get the CheesyBeez app' })).toBeNull();
+  expect(screen.queryByRole('region', { name: 'Get the Melo POS app' })).toBeNull();
   expect(location.hash).toBe('');
 });
 

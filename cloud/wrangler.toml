@@ -1,13 +1,13 @@
-# The Lume POS cloud copy . Deploy from this folder: npm run deploy
-name = "melo"
+# The Melo POS cloud copy . Deploy from this folder: npm run deploy
+name = "melobylume"
 main = "src/worker.ts"
 compatibility_date = "2025-06-01"
 workers_dev = true
 
 [[d1_databases]]
 binding = "DB"
-database_name = "melo"
-database_id = "89d4100b-5d6a-49f7-8456-f4dacce35e2c"
+database_name = "melobylume"
+database_id = "79ca62e0-54ca-4eec-8a4b-8b649ca7e402"
 
 # Voice and typed-order help (Cloudflare Workers AI, free within its daily allowance).
 [ai]
@@ -26,15 +26,15 @@ run_worker_first = ["/", "/api/*", "/mcp", "/mcp/*", "/.well-known/*", "/admin",
 
 # A test copy of the cloud, apart from the shops' live one: its own address and its own empty
 # database. Try changes end to end over the internet before they reach the shops:
-#   npm run deploy:staging  →  https://melo-staging.cheesybeez-cloud.workers.dev
+#   npm run deploy:staging  →  https://melobylume-staging.cheesybeez-cloud.workers.dev
 [env.staging]
-name = "melo-staging"
+name = "melobylume-staging"
 workers_dev = true
 
 [[env.staging.d1_databases]]
 binding = "DB"
-database_name = "melo-staging"
-database_id = "85e3e111-35c1-49b9-95a5-e8dd1c4f34ac"
+database_name = "melobylume-staging"
+database_id = "fac6ec03-aa29-49ca-97b2-56c0c98edd62"
 migrations_dir = "migrations"
 
 [env.staging.ai]

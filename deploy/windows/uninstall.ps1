@@ -1,4 +1,4 @@
-# Lume POS: undoes install.ps1 on a PC that should not keep the POS (a test PC, an old
+# Melo POS: undoes install.ps1 on a PC that should not keep the POS (a test PC, an old
 # counter PC). Run as administrator. It asks before deleting the data.
 #   uninstall.ps1
 # Node.js and Git stay installed (other programs may use them); remove them in
@@ -19,11 +19,11 @@ foreach ($name in @($TaskServer, $TaskBackup, $TaskUpdate)) {
 Get-CimInstance Win32_Process -Filter "Name = 'node.exe'" | Where-Object { $_.CommandLine -like '*server/main.ts*' } |
   ForEach-Object { Stop-Process -Id $_.ProcessId -Force; Write-Ok 'Stopped the server.' }
 
-$lnk = Join-Path ([Environment]::GetFolderPath('CommonStartup')) 'Lume POS.lnk'
+$lnk = Join-Path ([Environment]::GetFolderPath('CommonStartup')) 'Melo POS.lnk'
 if (Test-Path $lnk) { Remove-Item $lnk -Force; Write-Ok 'The POS no longer opens at login.' }
 
-if (Get-NetFirewallRule -DisplayName 'Lume POS' -ErrorAction SilentlyContinue) {
-  Remove-NetFirewallRule -DisplayName 'Lume POS'
+if (Get-NetFirewallRule -DisplayName 'Melo POS' -ErrorAction SilentlyContinue) {
+  Remove-NetFirewallRule -DisplayName 'Melo POS'
   Write-Ok "Closed port $Port."
 }
 
@@ -34,13 +34,13 @@ Write-Step 'Sleep settings'
 Write-Ok 'The PC may sleep again (screen 10 min, sleep 30 min).'
 
 Write-Step 'MySQL'
-$ownMySql = Get-Service -Name 'LumePOSMySQL' -ErrorAction SilentlyContinue
+$ownMySql = Get-Service -Name 'MeloPOSMySQL' -ErrorAction SilentlyContinue
 if ($ownMySql) {
   # Our own MySQL (installed by install.ps1): remove it completely, with its data, if confirmed.
   Write-Note 'This MySQL was installed for the POS. Removing it deletes ALL POS data (sales, staff).'
   if ((Read-Host '   Type DELETE to remove it, or press Enter to keep it') -eq 'DELETE') {
-    Stop-Service 'LumePOSMySQL' -Force
-    & "$Base\mysql\bin\mysqld.exe" --remove LumePOSMySQL | Out-Null
+    Stop-Service 'MeloPOSMySQL' -Force
+    & "$Base\mysql\bin\mysqld.exe" --remove MeloPOSMySQL | Out-Null
     Remove-Item "$Base\mysql", "$Base\mysql-data", "$Base\mysql-root-password.txt" -Recurse -Force -ErrorAction SilentlyContinue
     Write-Ok 'MySQL and the POS data removed.'
   }

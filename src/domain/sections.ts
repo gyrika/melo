@@ -42,7 +42,7 @@ export interface SectionSetting {
   /**
    * His own sections: sold only between these times, minutes after midnight (`to` may be past
    * midnight: 18:00-05:00). Absent = all day. A price that changes with the time of day = two
-   * sections of the same name, each with its own hours (Bata Kade's Rice & Curry, possaas 2026-10-30).
+   * sections of the same name, each with its own hours (Bata Kade's Rice & Curry, melo 2026-10-30).
    */
   hours?: SectionHours;
 }

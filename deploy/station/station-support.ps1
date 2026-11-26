@@ -1,9 +1,9 @@
-# Start menu > "Lume POS support file": the support file on the desktop, even when the POS does
+# Start menu > "Melo POS support file": the support file on the desktop, even when the POS does
 # not start (server/supportFile.ts, run with the Station's own Node.js). The shop's data is for
 # administrators only, so Windows asks once (Yes/No); then Explorer shows the file to send.
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName PresentationFramework
-function Say([string]$text) { [System.Windows.MessageBox]::Show($text, 'Lume POS support file') | Out-Null }
+function Say([string]$text) { [System.Windows.MessageBox]::Show($text, 'Melo POS support file') | Out-Null }
 
 $admin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $admin) {

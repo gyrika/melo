@@ -136,7 +136,7 @@ export function cvPack(o: CvPackOptions) {
     const stop = new AbortController();
     let stall = setTimeout(() => stop.abort(), stallMs);
     try {
-      const r = await http(cvPackUrl(o.appVersion(), version), { headers: { 'user-agent': 'CheesyBeez-Station' }, signal: stop.signal });
+      const r = await http(cvPackUrl(o.appVersion(), version), { headers: { 'user-agent': 'Melo-POS-Station' }, signal: stop.signal });
       if (!r.ok || !r.body) throw new Error(`GitHub answered ${r.status}`);
       const total = Number(r.headers.get('content-length')) || null;
       let bytes = 0;

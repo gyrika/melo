@@ -23,7 +23,7 @@ export const setUpOrderApp = (): (() => void) => {
   navigator.serviceWorker.addEventListener('controllerchange', cacheLoadedAssets);
   void navigator.serviceWorker.register('/order-sw.js', { scope }).then(
     cacheLoadedAssets,
-    (error: unknown) => console.error('Could not enable the CheesyBeez ordering app offline shell.', error),
+    (error: unknown) => console.error('Could not enable the ordering app offline shell.', error),
   );
 
   return () => {

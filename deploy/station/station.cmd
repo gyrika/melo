@@ -1,10 +1,10 @@
 @echo off
-rem Lume POS: the shop server. Started by the "Lume POS" task when Windows starts
+rem Melo POS: the shop server. Started by the "Melo POS" task when Windows starts
 rem (as SYSTEM). If it ever stops, it starts again 5 seconds later.
-rem Data (database, settings, logs, receipts in dry run): C:\ProgramData\LumePOS
-rem Optional settings (the cloud copy, MySQL...): C:\ProgramData\LumePOS\station.env
+rem Data (database, settings, logs, receipts in dry run): C:\ProgramData\MeloPOS
+rem Optional settings (the cloud copy, MySQL...): C:\ProgramData\MeloPOS\station.env
 setlocal
-set DATA_DIR=%ProgramData%\LumePOS
+set DATA_DIR=%ProgramData%\MeloPOS
 if not exist "%DATA_DIR%\logs" mkdir "%DATA_DIR%\logs"
 cd /d "%~dp0app"
 :loop

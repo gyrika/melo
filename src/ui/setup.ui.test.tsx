@@ -179,7 +179,7 @@ test('Update now, and the new version does not start: the owner is told it went 
   await user.click(await screen.findByRole('button', { name: 'Updates' }));
   await user.click(await screen.findByRole('button', { name: 'Update now' }));
   const alert = await screen.findByRole('alert', {}, { timeout: 12_000 });
-  expect(alert.textContent).toBe('Version 1.0.1 did not start on this PC, so Lume POS went back to 1.0.0. All sales are safe. Tell whoever looks after your POS.');
+  expect(alert.textContent).toBe('Version 1.0.1 did not start on this PC, so Melo POS went back to 1.0.0. All sales are safe. Tell whoever looks after your POS.');
   expect(restartApp).not.toHaveBeenCalled();
 }, 20_000);
 

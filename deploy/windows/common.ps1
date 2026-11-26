@@ -1,16 +1,16 @@
 # Shared by install.ps1, update.ps1, backup.ps1 and status.ps1 (Windows PowerShell 5.1).
-# Everything the POS keeps on the shop PC lives under C:\LumePOS.
+# Everything the POS keeps on the shop PC lives under C:\MeloPOS.
 
 $ErrorActionPreference = 'Stop'
 
-$Base      = 'C:\LumePOS'
-$Root      = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path   # the project (C:\LumePOS\app)
+$Base      = 'C:\MeloPOS'
+$Root      = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path   # the project (C:\MeloPOS\app)
 $Logs      = "$Base\logs"
 $Backups   = "$Base\backups"
 $Port      = 8080
-$TaskServer = 'Lume POS server'
-$TaskBackup = 'Lume POS nightly backup'
-$TaskUpdate = 'Lume POS nightly update'
+$TaskServer = 'Melo POS server'
+$TaskBackup = 'Melo POS nightly backup'
+$TaskUpdate = 'Melo POS nightly update'
 
 function Write-Step([string]$text) { Write-Host ''; Write-Host "== $text" -ForegroundColor Cyan }
 function Write-Ok([string]$text)   { Write-Host "   $text" -ForegroundColor Green }

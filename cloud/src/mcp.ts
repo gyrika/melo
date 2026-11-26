@@ -29,7 +29,7 @@ const MODERN_VERSION = '2026-07-28';
 /** With the initialize handshake. */
 const LEGACY_VERSIONS = ['2025-11-25', '2025-06-18', '2025-03-26'];
 const ALL_VERSIONS = [MODERN_VERSION, ...LEGACY_VERSIONS];
-const SERVER_INFO = { name: 'cheesybeez', title: 'CheesyBeez', version: '1.0.0' };
+const SERVER_INFO = { name: 'melo-pos', title: 'Melo POS', version: '1.0.0' };
 const INSTRUCTIONS = "Answers the owner's questions about his shop. Use only the numbers the tools return, and say how old they are when as_of is more than an hour old. A what-if on a price is your own arithmetic on those numbers: say so. It can fill in a supplier's draft order only when he asks; it cannot place an order.";
 const VERSION_KEY = 'io.modelcontextprotocol/protocolVersion';
 const CAPABILITIES_KEY = 'io.modelcontextprotocol/clientCapabilities';

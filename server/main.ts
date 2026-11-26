@@ -72,7 +72,7 @@ const chosen = settings.get().printer ?? process.env.PRINTER;
 const printer = switchablePrinter(chosen ? systemPrinter(chosen) : dryRunPrinter(printsDir));
 
 /** The CheesyBeez cloud copy (docs/cloud.md); a new shop joins it from the setup wizard. */
-const DEFAULT_CLOUD_URL = 'https://melo.cheesybeez-cloud.workers.dev';
+const DEFAULT_CLOUD_URL = 'https://melobylume.cheesybeez-cloud.workers.dev';
 const cloudUrl = (process.env.CLOUD_URL || DEFAULT_CLOUD_URL).replace(/\/$/, '');
 /** The cloud link: set by hand in the environment, or by the wizard (kept in the settings). */
 const cloudLink = () => {
@@ -138,7 +138,7 @@ const startCloud = () => {
 
 // The developer's Shops screen: only where server/.env has the admin password (the developer's laptop).
 const fleet = process.env.CLOUD_ADMIN_KEY
-  ? createFleet({ url: process.env.CLOUD_ADMIN_URL || 'https://melo.cheesybeez-cloud.workers.dev', key: process.env.CLOUD_ADMIN_KEY })
+  ? createFleet({ url: process.env.CLOUD_ADMIN_URL || 'https://melobylume.cheesybeez-cloud.workers.dev', key: process.env.CLOUD_ADMIN_KEY })
   : null;
 
 // Development only: CV_DEV_CAMERAS puts looping video or image files where cameras' streams would be.
@@ -219,7 +219,7 @@ startCloud();
 server.listen(port, '0.0.0.0', () => {
   const s = settings.get();
   const lan = lanAddress();
-  console.log(`Lume POS server on http://localhost:${port}${lan ? `  (shop Wi-Fi: http://${lan}:${port})` : ''}`);
+  console.log(`Melo POS server on http://localhost:${port}${lan ? `  (shop Wi-Fi: http://${lan}:${port})` : ''}`);
   console.log(`  shop: ${s.setupDone ? `${s.shopName} (${s.shopId})` : 'not set up yet: open the address above on this PC'}`);
   console.log(`  version: ${updates.current()}`);
   console.log(`  database: ${storeName}`);

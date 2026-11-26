@@ -27,10 +27,7 @@ const busy: Order = {
 test('the receipt as it prints: items, adjustments, discount, cash and change', () => {
   const text = receiptText(receipt(pay(busy, 'cash', 1000000), { cashier: 'Nimal' }));
   assert.equal(text, [
-    '                  DHANUJA CAFE',
-    '            Arachchikanda, Hapugala,',
-    '                Wakwella, Galle',
-    '                Tel 076 714 2873',
+    '                M e l o   P O S',
     '------------------------------------------------',
     'Bill 1043        Take Away        12/10/26 19:42',
     '------------------------------------------------',
@@ -93,21 +90,26 @@ test('ESC/POS bytes: init, drawer first, styles reset, ASCII only, then feed and
 
 test("the bill starts with the small logo and the shop's lines beside it; plain-text views say them", () => {
   const lines = receipt(pay(busy, 'cash'), { cashier: 'Nimal' });
-  assert.deepEqual(lines[0], { text: 'Dhanuja Cafe', center: true, badge: ['DHANUJA CAFE', 'Arachchikanda, Hapugala,', 'Wakwella, Galle', 'Tel 076 714 2873'] });
+  // Melo POS has no logo yet: its name prints large, then the solid line.
+  assert.deepEqual(lines[0], { text: 'Melo POS', center: true, big: true });
   assert.deepEqual(lines[1], { text: '-'.repeat(RECEIPT_WIDTH), solid: true }, 'then the solid line');
-  assert.equal(lines.filter((l) => l.badge || l.logo).length, 1);
-  // A shop without a logo yet prints its name large instead, the rest under it.
-  assert.deepEqual(receipt(pay(busy, 'cash'), { cashier: 'N', shop: { ...SHOP_HEADER, logo: false } }).slice(0, 2), [
-    { text: 'Dhanuja Cafe', center: true, big: true },
-    { text: 'Arachchikanda, Hapugala,', center: true },
+  assert.equal(lines.filter((l) => l.badge || l.logo).length, 0);
+  // A shop with a logo prints it small with its lines beside it.
+  const withLogo = { ...SHOP_HEADER, name: 'Sample Cafe', lines: ['Galle'], phone: '076 000 0000', logo: true };
+  assert.deepEqual(receipt(pay(busy, 'cash'), { cashier: 'N', shop: withLogo })[0],
+    { text: 'Sample Cafe', center: true, badge: ['SAMPLE CAFE', 'Galle', 'Tel 076 000 0000'] });
+  // Without a logo the rest goes under the large name.
+  assert.deepEqual(receipt(pay(busy, 'cash'), { cashier: 'N', shop: { ...withLogo, logo: false } }).slice(0, 2), [
+    { text: 'Sample Cafe', center: true, big: true },
+    { text: 'Galle', center: true },
   ]);
   // A tagline goes beside the logo, under the name.
-  const tag = receipt(pay(busy, 'cash'), { cashier: 'N', shop: { name: 'CheesyBeez', tagline: 'A taste worth finding', lines: ['Thalwila'], footer: 'Thank you!' } });
-  assert.deepEqual(tag[0].badge, ['CHEESYBEEZ', 'A taste worth finding', 'Thalwila']);
+  const tag = receipt(pay(busy, 'cash'), { cashier: 'N', shop: { name: 'Sample Cafe', tagline: 'A taste worth finding', lines: ['Thalwila'], footer: 'Thank you!' } });
+  assert.deepEqual(tag[0].badge, ['SAMPLE CAFE', 'A taste worth finding', 'Thalwila']);
   assert.equal(deliveryBill(
     { orderNumber: 7, name: 'A', phone: '0771234567', address: null, pin: null, note: '', lines: [], deliveryFee: 0, distanceKm: null, total: 0 },
     [], { at },
-  )[0].text, 'Dhanuja Cafe', 'the delivery bill too');
+  )[0].text, 'Melo POS', 'the delivery bill too');
 });
 
 test('the header prints the small logo in 24-dot bands with a line of text beside each, centred', () => {
@@ -195,7 +197,7 @@ test('two columns and wrapping', () => {
 test('a reprint is marked COPY', () => {
   const plain: Order = { number: 1, lines: [busy.lines[2]] };
   const lines = receiptText(receipt(pay(plain, 'cash'), { cashier: 'Nimal', copy: true })).split('\n');
-  assert.equal(lines[4].trim(), 'COPY', 'under the header');
+  assert.equal(lines[1].trim(), 'COPY', 'under the header');
   assert.ok(!receiptText(receipt(pay(plain, 'cash'), { cashier: 'Nimal' })).includes('COPY'));
 });
 

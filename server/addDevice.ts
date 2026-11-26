@@ -13,7 +13,7 @@ const { values } = parseArgs({
   options: {
     kind: { type: 'string', default: 'counter' },
     shop: { type: 'string' },
-    name: { type: 'string', default: 'CheesyBeez' },
+    name: { type: 'string', default: 'Melo POS' },
     host: { type: 'string', default: `localhost:${process.env.PORT ?? 8080}` },
   },
 });

@@ -190,7 +190,7 @@ test('before sign-in ChatGPT can look and list, as it does: no shop data, and th
   assert.equal(found.resultType, 'complete');
   assert.ok(found.supportedVersions.includes(MODERN));
   assert.deepEqual(found.capabilities, { tools: {} });
-  assert.equal(found._meta['io.modelcontextprotocol/serverInfo'].name, 'cheesybeez');
+  assert.equal(found._meta['io.modelcontextprotocol/serverInfo'].name, 'melo-pos');
 
   const { result: listed } = await (await post(modern(1, 'tools/list'), modernHeaders('tools/list'))).json();
   assert.equal(listed.resultType, 'complete');

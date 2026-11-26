@@ -86,7 +86,7 @@ test('the manager app installs with its key in the address it opens', () => {
   const key = 'k'.repeat(43);
   assert.equal(managerManifest(key).start_url, `/?manager=${key}#manager`);
   assert.equal(managerManifest('../evil').start_url, '/#manager');
-  assert.equal(managerManifest(null).name, 'CheesyBeez Manager');
+  assert.equal(managerManifest(null).name, 'Melo POS Manager');
 });
 
 test("the owner's phone signs as the owner and may only check gaps (SCRUM-95)", async () => {

@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 
 const staging = process.argv.includes('--staging');
 const key = randomBytes(32).toString('base64url'); // 43 characters: cannot be guessed
-const url = `https://melo${staging ? '-staging' : ''}.cheesybeez-cloud.workers.dev`;
+const url = `https://melobylume${staging ? '-staging' : ''}.cheesybeez-cloud.workers.dev`;
 
 const put = spawnSync('npx', ['wrangler', 'secret', 'put', 'ADMIN_KEY', ...(staging ? ['--env', 'staging'] : [])], {
   input: key, stdio: ['pipe', 'inherit', 'inherit'], shell: process.platform === 'win32',

@@ -39,7 +39,7 @@ test('the CHANGED BILL: same number, the bill now, paid before, PAID NOW, a date
   assert.deepEqual(blocks, [{ at: 120, entries: [{ text: 'Margherita: + Full cheese', amount: 60000 }], amount: 60000, tender: 'cash', tendered: 100000 }]);
   const lines = changedBill(paid, blocks, { cashier: 'Kasun' });
   assert.deepEqual(lines[1], { text: 'CHANGED BILL', center: true, bold: true }, 'under the header, no black band');
-  assert.equal(lines.filter((l) => l.big).length, 1, 'TOTAL the only big line');
+  assert.equal(lines.slice(1).filter((l) => l.big).length, 1, 'TOTAL the only big line under the shop name');
   const text = receiptText(lines);
   assert.match(text, /Bill 1001 +Take Away/);
   assert.doesNotMatch(text, /Kasun/, 'no cashier');

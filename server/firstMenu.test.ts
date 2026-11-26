@@ -40,7 +40,7 @@ test("Bata Kade's menu is stored on the counter's first pull, once; CheesyBeez' 
 test('a shop that stored the timed "Rice & Curry" sections gets the Breakfast and Lunch tabs', async () => {
   const store = memoryStore();
   const { device: counter } = await store.addDevice('bata-kade-ab12', 'Bata Kade', 'counter');
-  const actor = { id: 'lume-pos', name: 'Lume POS', role: 'owner' as const };
+  const actor = { id: 'melo-pos', name: 'Melo POS', role: 'owner' as const };
   const timed = (id: string, from: number, to: number): MenuEvent => ({
     id: `bk-menu-${id}`, shopId: 'bata-kade-ab12', at: 500, orderNumber: 0, actor, type: 'menu.section_set', itemId: id,
     before: null, after: { name: { en: 'Rice & Curry' }, cookMinutes: 3, hours: { from, to } },

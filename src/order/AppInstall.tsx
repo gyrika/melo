@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { standalone, useInstall } from '../services/ownerApp.ts';
+import { SHOP_NAME } from '../shop/identity.ts';
 
 /**
- * Came from the QR code on the bill (receipt.ts APP_URL, SCRUM-257): how to put CheesyBeez on this
+ * Came from the QR code on the bill (receipt.ts APP_URL, SCRUM-257): how to put the shop's app on this
  * phone's home screen, first thing on the page. One button where the browser offers it (Android),
  * the two taps where it does not (iPhone), the menu where neither (other browsers). Nothing once
  * the app is on the phone. × hides it and takes #app off the address.
@@ -18,11 +19,11 @@ export function AppInstall() {
     history.replaceState(history.state, '', location.pathname + location.search);
   };
   return (
-    <section className="o-app" aria-label="Get the CheesyBeez app">
+    <section className="o-app" aria-label={`Get the ${SHOP_NAME} app`}>
       <div className="o-wrap o-app__in">
         <img className="o-app__icon" src="/icons/icon-192.png" alt="" width={56} height={56} />
         <div className="o-app__text">
-          <h2>Get the CheesyBeez app</h2>
+          <h2>Get the {SHOP_NAME} app</h2>
           {install.kind === 'button' && <p>One tap, no app store. Your next order is on your home screen.</p>}
           {install.kind === 'iphone' && (
             <ol className="o-app__steps">

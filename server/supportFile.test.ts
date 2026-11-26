@@ -30,7 +30,7 @@ test("the support file: logs and this PC's details, never the sales, the databas
       dataDir: pc.data, outDir: pc.dir, version: '1.0.3', port: 8081, now: () => when, platform: 'linux',
       fetch: (async () => Response.json({ ok: true, version: '1.0.3' })) as unknown as typeof fetch,
     });
-    assert.equal(r.name, 'Lume POS support 2026-10-21 1432.zip');
+    assert.equal(r.name, 'Melo POS support 2026-10-21 1432.zip');
     const got = unzip(readFileSync(r.path));
     assert.deepEqual(Object.keys(got).sort(), ['about.txt', 'logs/server.log', 'logs/update.log', 'settings.json', 'station.env', 'update-status.json']);
     assert.match(got['about.txt'], /Version: +1\.0\.3/);
@@ -73,6 +73,6 @@ test('when the POS will not start, the file says so; on Windows it asks Windows 
 });
 
 test('names', () => {
-  assert.equal(supportFileName(new Date(2026, 0, 5, 9, 7)), 'Lume POS support 2026-01-05 0907.zip');
+  assert.equal(supportFileName(new Date(2026, 0, 5, 9, 7)), 'Melo POS support 2026-01-05 0907.zip');
   assert.equal(redactEnv('PRINTER=XP-80T\nCLOUD_TOKEN=abc\n\nnot a setting'), 'PRINTER=XP-80T\nCLOUD_TOKEN=(set)');
 });

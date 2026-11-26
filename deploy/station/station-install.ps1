@@ -5,7 +5,7 @@
 param([string]$WebView2Setup = '')
 $ErrorActionPreference = 'Stop'
 $app = $PSScriptRoot
-$data = Join-Path $env:ProgramData 'LumePOS'
+$data = Join-Path $env:ProgramData 'MeloPOS'
 New-Item -ItemType Directory -Force -Path (Join-Path $data 'logs') | Out-Null
 # The shop's data (sales, staff, the cloud key) is for Windows and administrators only, not every user.
 & icacls.exe $data /inheritance:r /grant:r '*S-1-5-18:(OI)(CI)F' '*S-1-5-32-544:(OI)(CI)F' | Out-Null
@@ -15,7 +15,7 @@ $always = New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -A
 
 # The shop server: starts with Windows, runs for ever (station.cmd restarts it if it stops).
 $server = New-ScheduledTaskAction -Execute 'cmd.exe' -Argument ('/c "{0}"' -f (Join-Path $app 'station.cmd')) -WorkingDirectory $app
-Register-ScheduledTask -TaskName 'Lume POS' -Action $server -Trigger (New-ScheduledTaskTrigger -AtStartup) -Principal $system -Settings $always -Force | Out-Null
+Register-ScheduledTask -TaskName 'Melo POS' -Action $server -Trigger (New-ScheduledTaskTrigger -AtStartup) -Principal $system -Settings $always -Force | Out-Null
 
 # A newer version from GitHub, minutes after it is released: every 5 minutes it looks, and installs
 # only when the counter has been quiet for 15 minutes (station-update.ps1). One at a time: a check
@@ -24,16 +24,16 @@ $updater = '-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "{0}"' 
 $update = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument $updater
 $every5 = New-ScheduledTaskTrigger -Once -At (Get-Date).Date -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration (New-TimeSpan -Days 3650)
 $once = New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
-Register-ScheduledTask -TaskName 'Lume POS update' -Action $update -Trigger $every5 -Principal $system -Settings $once -Force | Out-Null
+Register-ScheduledTask -TaskName 'Melo POS update' -Action $update -Trigger $every5 -Principal $system -Settings $once -Force | Out-Null
 
 # "Update now" in Shop setup: the shop server starts this task, which skips the waiting. A task of its
 # own so it outlives the server, which the installer stops.
 $updateNow = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "$updater -Force"
-Register-ScheduledTask -TaskName 'Lume POS update now' -Action $updateNow -Principal $system -Settings $once -Force | Out-Null
+Register-ScheduledTask -TaskName 'Melo POS update now' -Action $updateNow -Principal $system -Settings $once -Force | Out-Null
 
 # The nightly backup of the shop's data, at 4 am when the shop is closed (and an update, if one is waiting).
 $nightly = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "$updater -Nightly"
-Register-ScheduledTask -TaskName 'Lume POS nightly' -Action $nightly -Trigger (New-ScheduledTaskTrigger -Daily -At 4am) -Principal $system -Settings $once -Force | Out-Null
+Register-ScheduledTask -TaskName 'Melo POS nightly' -Action $nightly -Trigger (New-ScheduledTaskTrigger -Daily -At 4am) -Principal $system -Settings $once -Force | Out-Null
 
 # A counter PC that sleeps mid-service is no use (mains power only; battery settings untouched).
 & powercfg.exe /change standby-timeout-ac 0
@@ -42,11 +42,11 @@ Register-ScheduledTask -TaskName 'Lume POS nightly' -Action $nightly -Trigger (N
 # Kitchen tablets on the shop's Wi-Fi: only from the shop's own network (LocalSubnet), whatever
 # Windows calls it. Many shop PCs call their Wi-Fi "Public", and a Private-only rule kept tablets out
 # (seen in a support file). An older install's rule is widened the same way.
-$rule = Get-NetFirewallRule -DisplayName 'Lume POS' -ErrorAction SilentlyContinue
+$rule = Get-NetFirewallRule -DisplayName 'Melo POS' -ErrorAction SilentlyContinue
 if ($rule) {
   $rule | Set-NetFirewallRule -Profile Any -RemoteAddress LocalSubnet
 } else {
-  New-NetFirewallRule -DisplayName 'Lume POS' -Direction Inbound -Protocol TCP -LocalPort 8080 -Profile Any -RemoteAddress LocalSubnet -Action Allow | Out-Null
+  New-NetFirewallRule -DisplayName 'Melo POS' -Direction Inbound -Protocol TCP -LocalPort 8080 -Profile Any -RemoteAddress LocalSubnet -Action Allow | Out-Null
 }
 
 # The counter app shows the POS with Windows' own web engine (WebView2). Windows 10 and 11 normally
@@ -70,4 +70,4 @@ if (-not $present) {
   }
 }
 
-Start-ScheduledTask -TaskName 'Lume POS'
+Start-ScheduledTask -TaskName 'Melo POS'

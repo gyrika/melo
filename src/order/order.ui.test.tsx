@@ -154,8 +154,8 @@ test('pickup info: the town with a Maps link, how to pay; hours, Call and WhatsA
   render(<OrderSite />);
   await screen.findByText('Open for pickup');
   let info = within(screen.getByRole('region', { name: 'Pickup info' }));
-  expect(info.getByText(/Bata Kade/)).toBeTruthy();
-  expect(info.getByRole('link', { name: 'Open in Maps' }).getAttribute('href')).toContain('query=Bata%20Kade');
+  expect(info.getByText(/Melo POS/)).toBeTruthy();
+  expect(info.getByRole('link', { name: 'Open in Maps' }).getAttribute('href')).toContain('query=Melo%20POS');
   expect(info.getByText('Pay when you collect: cash or bank transfer')).toBeTruthy();
   expect(info.queryByText(/Daily/)).toBeNull();
   expect(info.queryByRole('link', { name: 'Call' })).toBeNull();
@@ -185,7 +185,7 @@ test('mood strips: two at most, after Pizza and before the footer, never back to
   expect(between.some((sec) => sec.querySelectorAll('.o-items > li').length >= 3)).toBe(true);
   expect(strips[1].nextElementSibling?.tagName).toBe('FOOTER');
   const end = within(strips[1]);
-  expect(end.getByText(/Bata Kade/)).toBeTruthy();
+  expect(end.getByText(/Melo POS/)).toBeTruthy();
   expect(end.queryByText(/Daily/)).toBeNull();
   expect(end.getByRole('link', { name: 'Open in Maps' })).toBeTruthy();
   for (const img of document.querySelectorAll('.o-strip img')) expect([img.getAttribute('loading'), img.getAttribute('width'), img.getAttribute('height')]).toEqual(['lazy', '800', '600']);

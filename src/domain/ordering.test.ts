@@ -9,7 +9,7 @@ test('the message lists each item with its pack size, and leaves out zeros', () 
     { name: 'Mozzarella (Prabhat)', packs: 2, packQty: 2000, baseUnit: 'g' },
     { name: 'Oregano', packs: 0, packQty: 100, baseUnit: 'g' },
     { name: 'Eggs', packs: 1, packQty: 30, baseUnit: 'pcs' },
-  ]), 'Hi, this is Bata Kade. Please send:\n2 × Mozzarella (Prabhat) (2 kg packs)\n1 × Eggs (30 pcs pack)\nThank you.');
+  ]), 'Hi, this is Melo POS. Please send:\n2 × Mozzarella (Prabhat) (2 kg packs)\n1 × Eggs (30 pcs pack)\nThank you.');
 });
 
 test('an item bought by the kg is ordered in kg; packs stay as they were', () => {
@@ -17,7 +17,7 @@ test('an item bought by the kg is ordered in kg; packs stay as they were', () =>
   assert.equal(orderMessage([
     { name: 'Pizza Flour', packs: 2, packQty: 25000, baseUnit: 'g', unit: kg },
     { name: 'Eggs', packs: 1, packQty: 30, baseUnit: 'pcs', unit: { id: 'pack', label: 'Pack · 30 pcs', base: 30 } },
-  ]), 'Hi, this is Bata Kade. Please send:\nPizza Flour: 50 kg\n1 × Eggs (30 pcs pack)\nThank you.');
+  ]), 'Hi, this is Melo POS. Please send:\nPizza Flour: 50 kg\n1 × Eggs (30 pcs pack)\nThank you.');
 });
 
 test('WhatsApp gets the country code and the message', () => {

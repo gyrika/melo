@@ -1,26 +1,26 @@
-# Every 5 minutes (as SYSTEM): if GitHub has a newer Lume POS, install it quietly. The
-# installer keeps the shop's data (C:\ProgramData\LumePOS) and restarts the POS.
+# Every 5 minutes (as SYSTEM): if GitHub has a newer Melo POS, install it quietly. The
+# installer keeps the shop's data (C:\ProgramData\MeloPOS) and restarts the POS.
 # Never during service: it installs nothing if a sale was recorded in the last 15 minutes,
-# unless the owner pressed "Update now" in Shop setup (-Force, through the "Lume POS update now"
+# unless the owner pressed "Update now" in Shop setup (-Force, through the "Melo POS update now"
 # task), which skips every wait. At 4 am (-Nightly) it first makes the nightly backup of the shop's data.
 # Safe: another backup right before installing, and if the new version does not answer within
 # 3 minutes, the version that was running is put back by itself. Everything goes in logs\update.log.
 param([switch]$Force, [switch]$Nightly)
 
-# Releases come from possaas' own GitHub Releases (public; no other repository), made by
+# Releases come from melo's own GitHub Releases (public; no other repository), made by
 # .github/workflows/station.yml. Turned off and on together with AUTO_UPDATES in server/updates.ts.
 $UpdatesOn = $true
-$Releases = 'gyrika/possaas'
+$Releases = 'gyrika/melo'
 $ErrorActionPreference = 'Stop'
 
 # One updater at a time, so "Update now" and the 5-minute check never install together. Windows lets
 # go when this script ends. A check gives way at once; "Update now" waits out another check, and if
 # that one is installing, the screen follows its steps instead.
-$lock = New-Object Threading.Mutex($false, 'Global\LumePOSUpdater')
+$lock = New-Object Threading.Mutex($false, 'Global\MeloPOSUpdater')
 $wait = if ($Nightly) { 600000 } elseif ($Force) { 20000 } else { 0 }
 try { if (-not $lock.WaitOne($wait)) { exit 0 } } catch [Threading.AbandonedMutexException] { }
 
-$data = Join-Path $env:ProgramData 'LumePOS'
+$data = Join-Path $env:ProgramData 'MeloPOS'
 $log = Join-Path $data 'logs\update.log'
 function Note([string]$text) { Add-Content -Path $log -Value ("[{0:yyyy-MM-dd HH:mm}] {1}" -f (Get-Date), $text) }
 
@@ -65,7 +65,7 @@ function Answers([string]$version) {
 # Downloads with real progress: 5% to 60% of the bar.
 function Download([string]$url, [string]$file, [bool]$show) {
   $req = [Net.HttpWebRequest]::Create($url)
-  $req.UserAgent = 'Lume-POS'
+  $req.UserAgent = 'Melo-POS'
   $res = $req.GetResponse()
   $total = $res.ContentLength
   $in = $res.GetResponseStream()
@@ -100,7 +100,7 @@ try {
 
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   $current = (Get-Content (Join-Path $PSScriptRoot 'version.txt') -Raw).Trim()
-  $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$Releases/releases/latest" -Headers @{ 'User-Agent' = 'Lume-POS-Station' } -TimeoutSec 30
+  $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$Releases/releases/latest" -Headers @{ 'User-Agent' = 'Melo-POS-Station' } -TimeoutSec 30
   $latest = $release.tag_name.TrimStart('v')
   $script:target = $latest
   # Checked every 5 minutes: only the nightly run and "Update now" say so in the log.
@@ -123,7 +123,7 @@ try {
   $script:installing = $true
   if ($Force) { Note 'Update now: asked for in Shop setup.' }
 
-  $asset = $release.assets | Where-Object { $_.name -like 'LumePOS-Setup-*.exe' } | Select-Object -First 1
+  $asset = $release.assets | Where-Object { $_.name -like 'MeloPOS-Setup-*.exe' } | Select-Object -First 1
   if (-not $asset) { Note "Release $latest has no installer."; if ($Force) { Status 'failed' 100 }; exit 0 }
   # No update without a good backup of the sales first.
   Status 'backup' 3
@@ -140,7 +140,7 @@ try {
   Note "Version $latest did not answer within 3 minutes: going back to $current."
   Status 'going-back' 90
   Set-Content -Path $skipFile -Value $latest
-  $back = "LumePOS-Setup-$current.exe"
+  $back = "MeloPOS-Setup-$current.exe"
   $code = Install "https://github.com/$Releases/releases/download/v$current/$back" $back $false
   if (Answers $current) { Note "Back on $current (installer exit $code). Version $latest is skipped until a newer one comes out."; Status 'back' 100 }
   else { Note "Going back to $current did not answer either (installer exit $code): needs a look over AnyDesk." }

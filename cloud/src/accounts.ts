@@ -227,7 +227,7 @@ export function createAccounts(c: AccountsContext) {
       const sessions = await db.prepare('SELECT created_at, expires_at FROM customer_sessions WHERE account_id = ? ORDER BY created_at').bind(row.id)
         .all<{ created_at: number; expires_at: number }>();
       const file = {
-        shop: 'CheesyBeez', exportedAt: new Date(now()).toISOString(), accountCreatedAt: new Date(created?.created_at ?? 0).toISOString(),
+        shop: 'Melo POS', exportedAt: new Date(now()).toISOString(), accountCreatedAt: new Date(created?.created_at ?? 0).toISOString(),
         profile: await profileOf(row), addresses: await addressesOf(row.id), orders: await ordersOf(row.id, 1000),
         signedIn: sessions.results.map((s) => ({ since: new Date(s.created_at).toISOString(), until: new Date(s.expires_at).toISOString() })),
       };

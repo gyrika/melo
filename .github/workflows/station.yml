@@ -1,4 +1,4 @@
-# Releases Lume POS on every merge to main, in the safe order:
+# Releases Melo POS on every merge to main, in the safe order:
 #   tests -> cloud staging -> cloud live -> Setup.exe (next version, e.g. 1.0.4 -> 1.0.5)
 #   -> installed and checked on Windows Server 2022 and 2025 -> GitHub Release.
 # Shop PCs look every 5 minutes and install it once their counter has been quiet for 15 minutes.
@@ -7,9 +7,9 @@
 # - Actions tab > Run workflow: a test build, nothing released.
 # The cloud is deployed only when the repository variable DEPLOY_CLOUD is "true" (and the two secrets
 # CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID are set). Off, a merge still tests and releases the
-# Setup.exe. The installers are published here, in possaas' own Releases: the one place shop PCs
+# Setup.exe. The installers are published here, in melo's own Releases: the one place shop PCs
 # update from and the cloud's /get page links to.
-name: Lume POS
+name: Melo POS
 
 on:
   push:
@@ -57,14 +57,14 @@ jobs:
         run: |
           npm run migrate:staging --prefix cloud
           npm run deploy:staging --prefix cloud
-          curl -fsS --retry 5 --retry-delay 3 https://melo-staging.cheesybeez-cloud.workers.dev/api/v1/health
+          curl -fsS --retry 5 --retry-delay 3 https://melobylume-staging.cheesybeez-cloud.workers.dev/api/v1/health
 
       - name: Cloud live
         if: vars.DEPLOY_CLOUD == 'true'
         run: |
           npm run migrate --prefix cloud
           npm run deploy --prefix cloud
-          curl -fsS --retry 5 --retry-delay 3 https://melo.cheesybeez-cloud.workers.dev/api/v1/health
+          curl -fsS --retry 5 --retry-delay 3 https://melobylume.cheesybeez-cloud.workers.dev/api/v1/health
 
   build:
     needs: cloud
@@ -122,14 +122,14 @@ jobs:
           if ($LASTEXITCODE) { throw "The backup failed ($LASTEXITCODE)" }
           if (-not (Get-ChildItem (Join-Path $data 'backups') -Filter 'pos-*-nightly.sqlite')) { throw 'No backup file' }
 
-      - name: Build the counter app (LumePOS.exe)
-        run: dotnet build deploy/station/pos-app/LumePOS.csproj -c Release -o deploy/station/stage/pos-app
+      - name: Build the counter app (MeloPOS.exe)
+        run: dotnet build deploy/station/pos-app/MeloPOS.csproj -c Release -o deploy/station/stage/pos-app
 
       - name: Check the counter app has everything it needs
         shell: pwsh
         run: |
           Get-ChildItem deploy/station/stage/pos-app -Recurse -File | ForEach-Object { $_.FullName.Replace((Resolve-Path deploy/station/stage/pos-app).Path, '') }
-          foreach ($need in 'LumePOS.exe', 'Microsoft.Web.WebView2.Core.dll', 'Microsoft.Web.WebView2.WinForms.dll', 'WebView2Loader.dll') {
+          foreach ($need in 'MeloPOS.exe', 'Microsoft.Web.WebView2.Core.dll', 'Microsoft.Web.WebView2.WinForms.dll', 'WebView2Loader.dll') {
             if (-not (Get-ChildItem deploy/station/stage/pos-app -Recurse -Filter $need)) { throw "The counter app is missing $need" }
           }
 
@@ -137,21 +137,21 @@ jobs:
         shell: pwsh
         run: |
           choco install innosetup --no-progress -y
-          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /Q "/DAppVersion=${{ steps.version.outputs.value }}" deploy\station\LumePOS.iss
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /Q "/DAppVersion=${{ steps.version.outputs.value }}" deploy\station\MeloPOS.iss
           if ($LASTEXITCODE) { throw "ISCC failed ($LASTEXITCODE)" }
-          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /Q "/DAppVersion=${{ steps.version.outputs.value }}" /DOffline deploy\station\LumePOS.iss
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /Q "/DAppVersion=${{ steps.version.outputs.value }}" /DOffline deploy\station\MeloPOS.iss
           if ($LASTEXITCODE) { throw "ISCC failed for the offline Setup.exe ($LASTEXITCODE)" }
           Get-ChildItem deploy\station\Output
 
       - uses: actions/upload-artifact@v4
         with:
-          name: LumePOS-Setup-${{ steps.version.outputs.value }}
-          path: deploy/station/Output/LumePOS-Setup-*.exe
+          name: MeloPOS-Setup-${{ steps.version.outputs.value }}
+          path: deploy/station/Output/MeloPOS-Setup-*.exe
 
       - uses: actions/upload-artifact@v4
         with:
-          name: LumePOS-Offline-Setup-${{ steps.version.outputs.value }}
-          path: deploy/station/Output/LumePOS-Offline-Setup-*.exe
+          name: MeloPOS-Offline-Setup-${{ steps.version.outputs.value }}
+          path: deploy/station/Output/MeloPOS-Offline-Setup-*.exe
 
   # The real Setup.exe on more than one Windows, the way a shop gets it: installed silently, then the
   # shop server, the counter app, the printer queue and the uninstall checked. Server 2022 is built on
@@ -163,16 +163,16 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-2022, windows-2025]
-        setup: [LumePOS-Setup]
+        setup: [MeloPOS-Setup]
         include:
           - os: windows-2022
-            setup: LumePOS-Offline-Setup
+            setup: MeloPOS-Offline-Setup
     runs-on: ${{ matrix.os }}
     name: install (${{ matrix.setup }}, ${{ matrix.os }})
     env:
       VERSION: ${{ needs.build.outputs.version }}
-      APP: C:\Program Files\Lume POS
-      DATA: C:\ProgramData\LumePOS
+      APP: C:\Program Files\Melo POS
+      DATA: C:\ProgramData\MeloPOS
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -187,7 +187,7 @@ jobs:
           $p = Start-Process $exe -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/LOG=$log" -Wait -PassThru
           if ($p.ExitCode) { Get-Content $log -Tail 60; throw "Setup.exe failed ($($p.ExitCode))" }
           # A test build is 0.0.N: the updater would replace it with the latest release, so it is switched off here.
-          Disable-ScheduledTask -TaskName 'Lume POS update' | Out-Null
+          Disable-ScheduledTask -TaskName 'Melo POS update' | Out-Null
 
       - name: The shop server answers as this version
         shell: pwsh
@@ -206,11 +206,11 @@ jobs:
       - name: Windows is set up (tasks, firewall, WebView2)
         shell: pwsh
         run: |
-          foreach ($t in 'Lume POS', 'Lume POS update', 'Lume POS update now', 'Lume POS nightly') { Get-ScheduledTask -TaskName $t | Out-Null }
-          $fw = Get-NetFirewallRule -DisplayName 'Lume POS'
+          foreach ($t in 'Melo POS', 'Melo POS update', 'Melo POS update now', 'Melo POS nightly') { Get-ScheduledTask -TaskName $t | Out-Null }
+          $fw = Get-NetFirewallRule -DisplayName 'Melo POS'
           if ("$($fw.Profile)" -ne 'Any') { throw "The firewall rule is for $($fw.Profile) networks only: tablets on a 'Public' Wi-Fi are kept out" }
           if ("$(($fw | Get-NetFirewallAddressFilter).RemoteAddress)" -ne 'LocalSubnet') { throw 'The firewall rule must let in the shop network only' }
-          if (-not (Test-Path "$env:PUBLIC\Desktop\Lume POS.lnk")) { throw 'No "Lume POS" shortcut on the desktop' }
+          if (-not (Test-Path "$env:PUBLIC\Desktop\Melo POS.lnk")) { throw 'No "Melo POS" shortcut on the desktop' }
           $wv = Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}' -ErrorAction SilentlyContinue
           if (-not $wv -or $wv.pv -in @($null, '', '0.0.0.0')) { throw 'WebView2 is not installed' }
           "WebView2 $($wv.pv)"
@@ -218,17 +218,17 @@ jobs:
       - name: The counter app starts and stays open
         shell: pwsh
         run: |
-          $already = @(Get-Process LumePOS -ErrorAction SilentlyContinue)
+          $already = @(Get-Process MeloPOS -ErrorAction SilentlyContinue)
           if ($already) { "Already running before the test: $($already | ForEach-Object { "$($_.Id) started $($_.StartTime)" })" }
-          $p = Start-Process "$env:APP\pos-app\LumePOS.exe" -WorkingDirectory "$env:APP\pos-app" -PassThru
+          $p = Start-Process "$env:APP\pos-app\MeloPOS.exe" -WorkingDirectory "$env:APP\pos-app" -PassThru
           Start-Sleep 15
           if ($p.HasExited) {
             # Evidence for why: another copy (it steps aside with exit 0), .NET or WebView2 errors.
-            Get-Process LumePOS, msedgewebview2 -ErrorAction SilentlyContinue | Format-Table -AutoSize Id, ProcessName, StartTime
+            Get-Process MeloPOS, msedgewebview2 -ErrorAction SilentlyContinue | Format-Table -AutoSize Id, ProcessName, StartTime
             Get-WinEvent -LogName Application -MaxEvents 60 -ErrorAction SilentlyContinue |
-              Where-Object { $_.ProviderName -match '\.NET Runtime|Application Error|Windows Error Reporting' -or $_.Message -match 'LumePOS|msedgewebview2' } |
+              Where-Object { $_.ProviderName -match '\.NET Runtime|Application Error|Windows Error Reporting' -or $_.Message -match 'MeloPOS|msedgewebview2' } |
               Format-List TimeCreated, ProviderName, Message
-            Get-ChildItem "$env:LOCALAPPDATA\LumePOS\pos-app" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 30 FullName
+            Get-ChildItem "$env:LOCALAPPDATA\MeloPOS\pos-app" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 30 FullName
             throw "The counter app closed by itself (exit $($p.ExitCode))"
           }
           Stop-Process -Id $p.Id -Force
@@ -240,11 +240,11 @@ jobs:
           $out = 'C:\cb-receipt.prn'
           Add-PrinterDriver -Name 'Generic / Text Only'
           Add-PrinterPort -Name $out
-          Add-Printer -Name 'Lume POS test' -DriverName 'Generic / Text Only' -PortName $out
-          $bytes = [byte[]](0x1B, 0x40) + [Text.Encoding]::ASCII.GetBytes("Lume POS test`n") + [byte[]](0x1D, 0x56, 0x00)
+          Add-Printer -Name 'Melo POS test' -DriverName 'Generic / Text Only' -PortName $out
+          $bytes = [byte[]](0x1B, 0x40) + [Text.Encoding]::ASCII.GetBytes("Melo POS test`n") + [byte[]](0x1D, 0x56, 0x00)
           $in = Join-Path $env:RUNNER_TEMP 'receipt.bin'
           [IO.File]::WriteAllBytes($in, $bytes)
-          & "$env:APP\app\server\rawprint.ps1" -Printer 'Lume POS test' -Path $in
+          & "$env:APP\app\server\rawprint.ps1" -Printer 'Melo POS test' -Path $in
           foreach ($i in 1..15) { if ((Test-Path $out) -and (Get-Item $out).Length -ge $bytes.Length) { break }; Start-Sleep 1 }
           $got = [IO.File]::ReadAllBytes($out)
           if ([Convert]::ToBase64String($got) -ne [Convert]::ToBase64String($bytes)) { throw "The printer got $($got.Length) bytes, not the $($bytes.Length) sent" }
@@ -252,10 +252,10 @@ jobs:
       - name: The support file, from the Start menu's script (works even when the POS does not start)
         shell: pwsh
         run: |
-          if (-not (Test-Path "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Lume POS support file.lnk")) { throw 'No "Lume POS support file" in the Start menu' }
+          if (-not (Test-Path "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Melo POS support file.lnk")) { throw 'No "Melo POS support file" in the Start menu' }
           $path = (& "$env:APP\node\node.exe" --experimental-strip-types --no-warnings "$env:APP\app\server\supportFile.ts" | Select-Object -Last 1).Trim()
           if ($LASTEXITCODE -or -not (Test-Path $path)) { throw "No support file ($path)" }
-          if ($path -notlike "$env:PUBLIC\Desktop\Lume POS support *.zip") { throw "Not on the shared desktop: $path" }
+          if ($path -notlike "$env:PUBLIC\Desktop\Melo POS support *.zip") { throw "Not on the shared desktop: $path" }
           $open = Join-Path $env:RUNNER_TEMP 'support'
           Expand-Archive $path $open
           $about = Get-Content (Join-Path $open 'about.txt') -Raw
@@ -272,7 +272,7 @@ jobs:
         shell: pwsh
         run: |
           $since = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
-          & schtasks.exe /Run /TN 'Lume POS update now'
+          & schtasks.exe /Run /TN 'Melo POS update now'
           if ($LASTEXITCODE) { throw "The task did not start ($LASTEXITCODE)" }
           $file = "$env:DATA\update-status.json"
           $s = $null
@@ -289,7 +289,7 @@ jobs:
         shell: pwsh
         run: |
           Start-Process "$env:APP\unins000.exe" -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART' -Wait
-          if (Get-ScheduledTask -TaskName 'Lume POS' -ErrorAction SilentlyContinue) { throw 'The server task is still there' }
+          if (Get-ScheduledTask -TaskName 'Melo POS' -ErrorAction SilentlyContinue) { throw 'The server task is still there' }
           if (-not (Test-Path "$env:DATA\pos.sqlite")) { throw "The uninstall removed the shop's database" }
 
   release:
@@ -310,8 +310,8 @@ jobs:
           target_commitish: ${{ github.sha }}
           files: setup/*.exe
           body: |
-            Lume POS ${{ needs.build.outputs.version }}: download **LumePOS-Setup-${{ needs.build.outputs.version }}.exe** and double-click it.
-            A PC without internet: **LumePOS-Offline-Setup-${{ needs.build.outputs.version }}.exe** (larger: it also carries Microsoft's WebView2).
+            Melo POS ${{ needs.build.outputs.version }}: download **MeloPOS-Setup-${{ needs.build.outputs.version }}.exe** and double-click it.
+            A PC without internet: **MeloPOS-Offline-Setup-${{ needs.build.outputs.version }}.exe** (larger: it also carries Microsoft's WebView2).
             Needs Windows 10 (version 2004 or newer) or Windows 11, 64-bit.
             Windows may say "Windows protected your PC" the first time: click **More info**, then **Run anyway**.
             Shop PCs install it by themselves once their counter has been quiet for 15 minutes; the shop's data is kept.

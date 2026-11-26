@@ -632,7 +632,7 @@ function Status({ placed, onDone, onAgain, onBack }: { placed: Placed; onDone: (
           </>)}
           {order.status === 'delivered' && (<>
             <h1>Enjoy your meal</h1>
-            <p className="o-lead">Thank you for ordering from CheesyBeez.</p>
+            <p className="o-lead">Thank you for ordering from {SHOP_NAME}.</p>
           </>)}
           {!delivery && order.status === 'accepted' && (<>
             <p className="o-kicker">Your order number</p>
@@ -646,7 +646,7 @@ function Status({ placed, onDone, onAgain, onBack }: { placed: Placed; onDone: (
           </>)}
           {order.status === 'collected' && (<>
             <h1>Enjoy your meal</h1>
-            <p className="o-lead">Thank you for ordering from CheesyBeez.</p>
+            <p className="o-lead">Thank you for ordering from {SHOP_NAME}.</p>
           </>)}
           {order.status === 'declined' && (<>
             <h1>Sorry, the shop couldn’t take this order</h1>
@@ -837,7 +837,7 @@ export function OrderSite() {
             </p>
           </MoodStrip>
           <Offers />
-          <footer className="o-foot">CheesyBeez · Pizza, burgers and pasta</footer>
+          <footer className="o-foot">{SHOP_NAME}</footer>
         </div>
         <aside className="o-side" aria-label="Your order and pickup">
           <CartPanel basket={basket} onChange={setBasket} onCheckout={() => setCheckout(true)} />

@@ -8,12 +8,12 @@ using System.Windows.Forms;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
-namespace LumePOS
+namespace MeloPOS
 {
     /// <summary>
     /// The counter's window onto the shop server on this PC (http://localhost:8080): full screen,
     /// its own icon, no browser around it, no browser pop-ups. If the server is still starting (or
-    /// restarting after an update), it shows a calm "Starting Lume POS" page and keeps trying.
+    /// restarting after an update), it shows a calm "Starting Melo POS" page and keeps trying.
     /// Always full screen (a counter has no use for a small window); Alt+F4 closes the app.
     /// </summary>
     internal static class Program
@@ -23,12 +23,12 @@ namespace LumePOS
         [STAThread]
         private static void Main(string[] args)
         {
-            // A developer can point it at a dev server: LumePOS.exe http://localhost:5185/
+            // A developer can point it at a dev server: MeloPOS.exe http://localhost:5185/
             var pos = args.Length > 0 && args[0].StartsWith("http://localhost:") ? args[0].TrimEnd('/') + "/" : Pos;
             // One window is enough: a second start just brings the first one forward.
-            using (var single = new Mutex(true, "LumePOS.Counter", out var first))
+            using (var single = new Mutex(true, "MeloPOS.Counter", out var first))
             {
-                if (!first) { NativeFocus.Existing("Lume POS"); return; }
+                if (!first) { NativeFocus.Existing("Melo POS"); return; }
                 NativeFocus.SharpOnScaledScreens();
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
@@ -47,8 +47,8 @@ namespace LumePOS
         public PosWindow(string url)
         {
             this.url = url;
-            Text = "Lume POS";
-            Icon = new Icon(typeof(Program).Assembly.GetManifestResourceStream("LumePOS.app.ico"));
+            Text = "Melo POS";
+            Icon = new Icon(typeof(Program).Assembly.GetManifestResourceStream("MeloPOS.app.ico"));
             BackColor = Color.FromArgb(0xF2, 0xF1, 0xEF);
             FormBorderStyle = FormBorderStyle.None;     // full screen: no title bar, no edges
             WindowState = FormWindowState.Maximized;    // borderless + maximised covers the taskbar too
@@ -59,7 +59,7 @@ namespace LumePOS
         private async Task StartAsync()
         {
             // The app's own storage (the counter's pairing, its settings), apart from any browser.
-            var data = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LumePOS", "pos-app");
+            var data = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MeloPOS", "pos-app");
             var env = await CoreWebView2Environment.CreateAsync(null, data);
             await web.EnsureCoreWebView2Async(env);
             var core = web.CoreWebView2;
@@ -73,7 +73,7 @@ namespace LumePOS
             core.Settings.AreBrowserAcceleratorKeysEnabled = false; // no Ctrl+P, Ctrl+F, F5 and friends
             core.Settings.IsPasswordAutosaveEnabled = false;
             core.Settings.IsGeneralAutofillEnabled = false;
-            core.DocumentTitleChanged += (s, e) => Text = "Lume POS";
+            core.DocumentTitleChanged += (s, e) => Text = "Melo POS";
             // Links to anywhere else (GitHub, the cloud) open in the normal browser, never inside the POS.
             core.NewWindowRequested += (s, e) => { e.Handled = true; OpenOutside(e.Uri); };
             core.NavigationStarting += (s, e) => { if (!IsPos(e.Uri) && !e.Uri.StartsWith("data:")) { e.Cancel = true; OpenOutside(e.Uri); } };
@@ -131,7 +131,7 @@ html,body{margin:0;height:100%;background:#F2F1EF;color:#1C1C1E;font-family:'DM 
 main{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
 h1{margin:0;font-size:26px;font-weight:500;letter-spacing:-.5px}p{margin:0;color:#6E6D72;font-size:16px}
 i{width:36px;height:36px;border-radius:50%;border:3px solid #E3E1DE;border-top-color:#E8A94B;animation:s 900ms linear infinite}
-@keyframes s{to{transform:rotate(360deg)}}</style></head><body><main><i></i><h1>Starting Lume POS</h1>
+@keyframes s{to{transform:rotate(360deg)}}</style></head><body><main><i></i><h1>Starting Melo POS</h1>
 <p>This takes a few seconds, or a minute or two after an update. Sales already taken are safe.</p></main></body></html>";
     }
 

@@ -11,6 +11,7 @@ import type { DeliveryPin } from './online.ts';
 import { lineItemName } from './halves.ts';
 import { RECEIPT_LOGO } from './receiptLogo.ts';
 import { COMB } from './receiptComb.ts';
+import { SHOP_NAME } from '../shop/identity.ts';
 
 /**
  * The customer receipt for the Xprinter XP-80T (80 mm, ESC/POS), in two
@@ -43,7 +44,7 @@ export interface ShopHeader {
  * bill is Dhanuja Cafe, while the screens keep SHOP_NAME (identity.ts).
  */
 export const SHOP_HEADER: ShopHeader = {
-  name: 'Dhanuja Cafe', tagline: '', lines: ['Arachchikanda, Hapugala,', 'Wakwella, Galle'], phone: '076 714 2873',
+  name: SHOP_NAME, tagline: '', lines: [], phone: '', logo: false,
   footer: 'Thank you! Come again.',
 };
 

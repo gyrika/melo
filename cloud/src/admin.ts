@@ -141,8 +141,8 @@ const shell = (title: string, body: string, refresh = false) => `<!doctype html>
 <style>${STYLE}</style></head><body>${body}</body></html>`;
 
 /** The sign-in box, and nothing else, for anyone without a session. */
-export const signInPage = (wrong: boolean): string => shell('CheesyBeez admin', `<main class="signin">
-<h1>CheesyBeez admin</h1>
+export const signInPage = (wrong: boolean): string => shell('Melo POS admin', `<main class="signin">
+<h1>Melo POS admin</h1>
 <form method="post" action="/admin/login">
   <input name="key" type="password" autocomplete="current-password" aria-label="Admin password" placeholder="Admin password" required autofocus>
   ${wrong ? '<p class="bad" role="alert">That password is not right.</p>' : ''}
@@ -171,7 +171,7 @@ export const adminPage = (rows: ShopRow[], latest: string | null, now: number): 
   </span>
 </a>`;
   };
-  return shell('CheesyBeez admin', `<main>
+  return shell('Melo POS admin', `<main>
 <header><h1>Shops</h1><form method="post" action="/admin/logout"><button class="quiet" type="submit">Sign out</button></form></header>
 <p class="lead">${online} of ${rows.length} online · latest release ${esc(latest ?? 'unknown')}${behind ? ` · ${behind} still to update` : ''}</p>
 ${rows.length ? rows.map(row).join('\n') : '<p class="empty">No shops yet.</p>'}

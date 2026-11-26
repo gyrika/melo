@@ -5,10 +5,10 @@ import type { SectionSetting } from '../domain/sections.ts';
 import type { Category, MenuItem } from '../domain/types.ts';
 
 /*
- * Bata Kade's menu (possaas, 2026-11-16): ERP's counter, copied as it is, sells Bata Kade's food. The
+ * Bata Kade's menu (melo, 2026-11-16): ERP's counter, copied as it is, sells Bata Kade's food. The
  * menu goes in as ERP's own menu events (sections, items, the printed CheesyBeez items hidden), sent
  * by the shop server on the counter's first pull (server/firstMenu.ts). Names, Sinhala names and
- * prices = possaas main's menu as it stands (price list 2026-11-13, changes 2026-11-14), copied by
+ * prices = melo main's menu as it stands (price list 2026-11-13, changes 2026-11-14), copied by
  * running that code. ERP gives a section one set of sizes and no extras, so an item with its own
  * kinds is one card per kind ("Water (1 L)") and an extra is its own item ("Bread extra: Egg").
  *
@@ -18,7 +18,7 @@ import type { Category, MenuItem } from '../domain/types.ts';
  */
 
 /** Who added the menu: the POS itself, not a person (it shows in the audit as this). */
-export const MENU_INSTALLER: Actor = { id: 'lume-pos', name: 'Lume POS', role: 'owner' };
+export const MENU_INSTALLER: Actor = { id: 'melo-pos', name: 'Melo POS', role: 'owner' };
 
 const PORTIONS: SectionSetting['sizes'] = [{ id: 'x1', label: 'Half' }, { id: 'x2', label: 'Full' }];
 
@@ -140,7 +140,7 @@ export const bataKadeMenuEvents = (shopId: string, at: number, actor: Actor = ME
   ];
 };
 
-/** What staff type for each item ("egg rice", "kottu", "tea"), from possaas' menu: ERP's own items answer only to their full name. */
+/** What staff type for each item ("egg rice", "kottu", "tea"), from melo's menu: ERP's own items answer only to their full name. */
 const ALIASES: Readonly<Record<string, string[]>> = {
   'new-rc-m-vege': ['vegetable rice', 'vege rice', 'veg rice', 'elawalu bath'],
   'new-rc-m-fish': ['fish rice', 'malu bath'],
